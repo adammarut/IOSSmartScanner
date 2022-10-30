@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		660C786129074E9C0076BC93 /* ShelfScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660C786029074E9C0076BC93 /* ShelfScanner.swift */; };
 		6629566B2905AD33009B4F51 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6629566A2905AD33009B4F51 /* AppDelegate.swift */; };
 		6629566D2905AD33009B4F51 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6629566C2905AD33009B4F51 /* SceneDelegate.swift */; };
 		6629566F2905AD33009B4F51 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6629566E2905AD33009B4F51 /* ViewController.swift */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		660C786029074E9C0076BC93 /* ShelfScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShelfScanner.swift; sourceTree = "<group>"; };
 		662956672905AD33009B4F51 /* Shop shelf scanner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shop shelf scanner.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6629566A2905AD33009B4F51 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6629566C2905AD33009B4F51 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -56,15 +58,40 @@
 		662956692905AD33009B4F51 /* Shop shelf scanner */ = {
 			isa = PBXGroup;
 			children = (
+				662956802905B323009B4F51 /* Controller */,
+				6629567F2905B31D009B4F51 /* View */,
+				6629567E2905B314009B4F51 /* Model */,
 				6629566A2905AD33009B4F51 /* AppDelegate.swift */,
 				6629566C2905AD33009B4F51 /* SceneDelegate.swift */,
-				6629566E2905AD33009B4F51 /* ViewController.swift */,
-				662956702905AD33009B4F51 /* Main.storyboard */,
 				662956732905AD38009B4F51 /* Assets.xcassets */,
 				662956752905AD38009B4F51 /* LaunchScreen.storyboard */,
 				662956782905AD38009B4F51 /* Info.plist */,
 			);
 			path = "Shop shelf scanner";
+			sourceTree = "<group>";
+		};
+		6629567E2905B314009B4F51 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				660C786029074E9C0076BC93 /* ShelfScanner.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		6629567F2905B31D009B4F51 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				662956702905AD33009B4F51 /* Main.storyboard */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		662956802905B323009B4F51 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				6629566E2905AD33009B4F51 /* ViewController.swift */,
+			);
+			path = Controller;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -139,6 +166,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6629566F2905AD33009B4F51 /* ViewController.swift in Sources */,
+				660C786129074E9C0076BC93 /* ShelfScanner.swift in Sources */,
 				6629566B2905AD33009B4F51 /* AppDelegate.swift in Sources */,
 				6629566D2905AD33009B4F51 /* SceneDelegate.swift in Sources */,
 			);
@@ -293,8 +321,10 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -321,8 +351,10 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
