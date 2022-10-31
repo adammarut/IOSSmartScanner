@@ -7,14 +7,12 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
 
     let imagePicker = UIImagePickerController()
     var acc = AccelerometerHandler(updateInterval: 1.0/60.0)
-    let device = UIDevice()
     @IBOutlet weak var emailTxtBox: UITextField!
     @IBOutlet weak var imageBox: UIImageView!
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.hidesBackButton = true
         imagePicker.delegate = self
-        print(device.identifierForVendor?.uuidString)
         // Do any additional setup after loading the view.
     }
 
@@ -28,7 +26,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         imagePicker.sourceType = .camera
         imagePicker.allowsEditing = false
         present(imagePicker, animated: true, completion: nil)
-        print(acc.accelData.count)
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
@@ -36,20 +33,16 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         if let image = info[.originalImage] as? UIImage {
             let imageData = image.pngData()
             let base64String = imageData?.base64EncodedString()
-            print(imageData!.count)
+            self.acc.addRawData(rawData: base64String!)
             self.imageBox.image = getImageFromBase64(stringData: base64String!)
         }
         //getAccelerometerData(durationInSeconds: 1.0)
         imagePicker.dismiss(animated: true, completion: nil)
-        acc.recordSensorsData(duration: 4.0)
-
-        
-    }
-    
-    func recordSensors() async throws -> String{
-        
-        
-        return ""
+        acc.startRecordingSensorsData()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+            let data = self.acc.stopRecordingSensorData()
+            print(getHash(data: data))
+        }
     }
     
 }

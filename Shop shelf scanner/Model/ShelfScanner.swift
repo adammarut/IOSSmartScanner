@@ -9,53 +9,64 @@ import Foundation
 import CoreMotion
 import UIKit
 import CryptoKit
+import CoreBluetooth
 
-class AccelerometerHandler{
+class AccelerometerHandler: NSObject{
     var manager = CMMotionManager()
     let recorder = CMSensorRecorder()
     let updateInterval: Double
-    var accelDataPack:AccelerometerDataLog?
     var accelData: [XYZValue] = []
     var gyroData: [XYZValue] = []
     var magnetometerData: [XYZValue] = []
     var attitudeData: [EulerValue] = []
     var startDate: Date?
     var queue = OperationQueue()
+    var rawPhotoData: String?
+    let device = UIDevice()
+    var centralManager: CBCentralManager?
+    var bleDevices = Array<CBPeripheral>()
+    var bleDevicesData: [BleDevice] = []
     
     init(manager: CMMotionManager = CMMotionManager(), updateInterval: Double) {
         self.manager = manager
         self.updateInterval = updateInterval
     }
+    struct PackedData:Codable{
+        let sensors_data: SensorsData
+        let image: String
+        let UUID: String?
+        let ble_devices: [BleDevice]
+    }
+    struct SensorsData: Codable{
+        let acc_data: [XYZValue]
+        let gyro_data: [XYZValue]
+        let mag_data: [XYZValue]
+        let att_data: [EulerValue]
+    }
     
+    struct BleDevice:Codable{
+        let name:String
+        let rssi: Int
+    }
     struct EulerValue:Codable{
-        var pitch:Double
-        var roll:Double
-        var yaw:Double
-        var heading:Double
+        let pitch:Double
+        let roll:Double
+        let yaw:Double
+        let heading:Double
     }
     
     
     struct XYZValue:Codable{
-        var x:Double
-        var y:Double
-        var z:Double
+        let x:Double
+        let y:Double
+        let z:Double
     }
     
-    struct AccelerometerDataLog:Codable{
-        var interval:Double
-        var accelerometerData: [XYZValue]
+    
+    
+    func startRecordingSensorsData(){
+        self.getBLEDevices()
         
-        mutating func addAccelerometerValue(value:XYZValue){
-            accelerometerData.append(value)
-        }
-    }
-    
-    struct GyroDataLog:Codable{
-        var interval: Double
-        var gyroData: [XYZValue]
-    }
-    
-    func recordSensorsData(duration: Double){
         //Get accelerometer data
         if manager.isAccelerometerAvailable{
             self.manager.accelerometerUpdateInterval = self.updateInterval
@@ -81,7 +92,7 @@ class AccelerometerHandler{
                     self.gyroData.append(XYZValue(x: x,
                                                   y: y,
                                                   z: z))
-
+                    
                 }
             })
         }
@@ -99,8 +110,8 @@ class AccelerometerHandler{
                                                           z: z))
                 }
             })
-                
-            }
+            
+        }
         
         //Get attitude data
         if manager.isDeviceMotionAvailable {
@@ -119,128 +130,69 @@ class AccelerometerHandler{
                                                         roll: roll,
                                                         yaw: yaw,
                                                         heading: heading))
-
+                    
                 }
             })
         }
-    DispatchQueue.main.asyncAfter(deadline: .now()+duration) {
+    }
+    
+    func getBLEDevices(){
+        centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
+    }
+    
+    func stopRecordingSensorData() -> String
+    {
         self.manager.stopGyroUpdates()
         self.manager.stopMagnetometerUpdates()
         self.manager.stopAccelerometerUpdates()
         self.manager.stopDeviceMotionUpdates()
+        self.centralManager?.stopScan()
         print("Finished with \(self.accelData.count)")
-    }
-
-    }
-
-    func initAccelerometer(){
-        self.manager.accelerometerUpdateInterval = self.updateInterval
-        self.manager.startAccelerometerUpdates()
-    }
-    
-    
-    
-    func recordAccelerometerData(duration: Double) {
-        self.accelData = []
-        var timerFinished:Bool = false
-        manager.accelerometerUpdateInterval = self.updateInterval
-        if CMSensorRecorder.isAccelerometerRecordingAvailable() {
-            print("recorder started")
-            DispatchQueue.global(qos: .background).async {
-                self.recorder.recordAccelerometer(forDuration: duration)
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + duration + 0.5) {
-                self.getData()
-            }
-        }
         
+        return self.getJsonData()
     }
-    func recordGyroData(duration: Double) {
-        self.accelData = []
-        var timerFinished:Bool = false
-        manager.gyroUpdateInterval = self.updateInterval
-        if CMSensorRecorder.isAccelerometerRecordingAvailable() {
-            print("recorder started")
-            DispatchQueue.global(qos: .background).async {
-                //        self.recorder.rec(forDuration: duration)
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + duration + 0.5) {
-                self.getData()
-            }
+    func addRawData(rawData:String)
+    {
+        self.rawPhotoData = rawData
+    }
+    func getJsonData()-> String
+    {
+        let sensorsData = SensorsData(acc_data: self.accelData, gyro_data: self.gyroData, mag_data: self.magnetometerData, att_data: self.attitudeData)
+        let allData = PackedData(sensors_data: sensorsData, image: self.rawPhotoData!, UUID: device.identifierForVendor?.uuidString, ble_devices: self.bleDevicesData)
+        let encoder = JSONEncoder()
+        let stringJSON = try! encoder.encode(allData)
+        return  String(data:stringJSON, encoding: .utf8)!
+    }
+}
+extension AccelerometerHandler: CBCentralManagerDelegate{
+    func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        if (central.state == .poweredOn){
+            self.centralManager?.scanForPeripherals(withServices: nil, options: nil)
         }
-        
     }
-    func getData(){
-        print("getData started")
-        if let list = recorder.accelerometerData(from: Date(timeIntervalSinceNow: -60), to: Date()) {
-            print("listing data")
-            for data in list{
-                if let accData = data as? CMRecordedAccelerometerData{
-                    self.accelData.append(XYZValue(x: accData.acceleration.x, y: accData.acceleration.y, z: accData.acceleration.z))
+    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
+        self.bleDevices.append(peripheral)
+        
+        if let name = peripheral.name{
+            if self.bleDevicesData.isEmpty{
+                self.bleDevicesData.append(BleDevice(name: name, rssi: Int(truncating: RSSI)))
+            }
+            else{
+                var exist = false
+                for device in self.bleDevicesData{
+                    if device.name == name
+                    {
+                        exist = true
+                    }
+                }
+                if !exist{
+                    self.bleDevicesData.append(BleDevice(name: name, rssi: Int(truncating: RSSI)))
                 }
             }
-            print("Saved accelerometer data: \(self.accelData.count)")
-        }
-    }
-    
-    
-    
-    //
-    //            self.accelDataPack = AccelerometerDataLog(interval: self.manager.accelerometerUpdateInterval, accelerometerData: accelData)
-    //            let jsonAccelerometerRaw = try JSONEncoder().encode(accelDataPack)
-    //            let jsonAccelerometerString = String(data: jsonAccelerometerRaw, encoding: .utf8)!
-    //            print(jsonAccelerometerString)
-    //            return jsonAccelerometerString
-    //        } catch {
-    ////            print(error)
-    //            return ""
-    //        }
-    
-    //    @objc func addRecord(){
-    //        if let data = self.manager.accelerometerData
-    //        {
-    //            self.accelDataPack!.addAccelerometerValue(value: XYZValue(x: data.acceleration.x, y: data.acceleration.y, z: data.acceleration.z))
-    //            print("x:\(data.acceleration.x) y:\(data.acceleration.y) z:\(data.acceleration.z)")
-    //        }
-    //    }
-    
-    //    func getAccelerometerData(durationInSeconds seconds: Double){
-    //        if CMSensorRecorder.isAccelerometerRecordingAvailable(){
-    //            let recorder = CMSensorRecorder()
-    //            let start = NSDate()
-    //            recorder.recordAccelerometer(forDuration:seconds)
-    //            let now = NSDate()
-    //            if   let list  =  recorder.accelerometerData(from: start as Date, to: now as Date)
-    //            {
-    //                for record in list
-    //                {
-    //                    let data = record as! CMRecordedAccelerometerData
-    //                    print("x: \(data.acceleration.x) y: \(data.acceleration.y) z: \(data.acceleration.z) time :\(data.startDate.formatted())")
-    //                }
-    //            }
-    //
-    //        }
-    //    }
-    //
-    func startQueuedUpdates() {
-        if manager.isDeviceMotionAvailable {
-            self.manager.deviceMotionUpdateInterval = 1.0 / 60.0
-            self.manager.showsDeviceMovementDisplay = true
-            self.manager.startDeviceMotionUpdates(using: .xMagneticNorthZVertical,
-                                                  to: self.queue, withHandler: { (data, error) in
-                // Make sure the data is valid before accessing it.
-                if let validData = data {
-                    // Get the attitude relative to the magnetic north reference frame.
-                    let roll = validData.attitude.roll
-                    let pitch = validData.attitude.pitch
-                    let yaw = validData.attitude.yaw
-                    self.accelData.append(XYZValue(x:roll, y: pitch, z: yaw))
-                    // Use the motion data in your app.
-                }
-            })
         }
     }
 }
+
 extension CMSensorDataList: Sequence {
     public typealias Iterator = NSFastEnumerationIterator
     public func makeIterator() -> NSFastEnumerationIterator {
