@@ -8,19 +8,38 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     let imagePicker = UIImagePickerController()
     var acc = AccelerometerHandler(updateInterval: 1.0/60.0)
     @IBOutlet weak var emailTxtBox: UITextField!
+    @IBOutlet weak var secondsStepper: UIStepper!
+    @IBOutlet weak var secondsLabel: UITextField!
     @IBOutlet weak var imageBox: UIImageView!
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.hidesBackButton = true
         imagePicker.delegate = self
+        
+        
+       // self.modalPresentationStyle = .fullScreen
         // Do any additional setup after loading the view.
     }
 
     @IBAction func LoginButtonTapped(_ sender: UIButton) {
         performSegue(withIdentifier: "MainWindowSegue", sender: self)
     }
+    @IBAction func settingsTapped(_ sender: UIBarButtonItem) {
+        performSegue(withIdentifier: "SettingsSegue", sender: self)
+        secondsStepper.minimumValue = 1
+        secondsStepper.maximumValue = 120
+        secondsStepper.value = 3.0
+        secondsLabel.text = String(secondsStepper.value)
+
+    }
     @IBAction func logOutTapped(_ sender: UIBarButtonItem) {
         navigationController?.popToRootViewController(animated: true)
+    }
+    @IBAction func settingsBtnTapped(_ sender: UIBarButtonItem) {
+        navigationController?.popToRootViewController(animated: true)
+        
     }
     @IBAction func cameraTapped(_ sender: UIButton) {
         imagePicker.sourceType = .camera
@@ -28,6 +47,11 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         present(imagePicker, animated: true, completion: nil)
     }
     
+    @IBAction func secondsChanged(_ sender: UIStepper) {
+        print(secondsStepper.value)
+        secondsLabel.text = String(secondsStepper.value)
+
+    }
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
         if let image = info[.originalImage] as? UIImage {
@@ -36,12 +60,12 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             self.acc.addRawData(rawData: base64String!)
             self.imageBox.image = getImageFromBase64(stringData: base64String!)
         }
-        //getAccelerometerData(durationInSeconds: 1.0)
         imagePicker.dismiss(animated: true, completion: nil)
         acc.startRecordingSensorsData()
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
             let data = self.acc.stopRecordingSensorData()
-            print(getHash(data: data))
+            print("SHA256: \(getHash(data: data))")
+            
         }
     }
     

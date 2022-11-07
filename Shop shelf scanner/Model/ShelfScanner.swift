@@ -147,7 +147,7 @@ class AccelerometerHandler: NSObject{
         self.manager.stopAccelerometerUpdates()
         self.manager.stopDeviceMotionUpdates()
         self.centralManager?.stopScan()
-        print("Finished with \(self.accelData.count)")
+        print("Finished with \(self.accelData.count) telemetry records.")
         
         return self.getJsonData()
     }
