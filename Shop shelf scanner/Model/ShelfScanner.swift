@@ -26,6 +26,7 @@ class AccelerometerHandler: NSObject{
     var centralManager: CBCentralManager?
     var bleDevices = Array<CBPeripheral>()
     var bleDevicesData: [BleDevice] = []
+    var shelfPhotos: [UIImage] = []
     
     init(manager: CMMotionManager = CMMotionManager(), updateInterval: Double) {
         self.manager = manager
@@ -136,6 +137,11 @@ class AccelerometerHandler: NSObject{
         }
     }
     
+    func addPhoto(image: UIImage)
+    {
+        self.shelfPhotos.append(image)
+    }
+    
     func getBLEDevices(){
         centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
     }
@@ -162,6 +168,17 @@ class AccelerometerHandler: NSObject{
         let encoder = JSONEncoder()
         let stringJSON = try! encoder.encode(allData)
         return  String(data:stringJSON, encoding: .utf8)!
+    }
+    
+    func stitchPhotos()->Bool{
+        if self.shelfPhotos.count>1{
+            let stitchedPhoto = OpenCVWrapper.stitchPhotos(self.shelfPhotos as! [Any], panoramicWarp: true)
+            if stitchedPhoto == nil{
+                return false
+            }
+            return true
+        }
+        return false
     }
 }
 extension AccelerometerHandler: CBCentralManagerDelegate{

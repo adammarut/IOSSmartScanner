@@ -59,6 +59,14 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             let base64String = imageData?.base64EncodedString()
             self.acc.addRawData(rawData: base64String!)
             self.imageBox.image = getImageFromBase64(stringData: base64String!)
+            acc.addPhoto(image: image)
+            if acc.stitchPhotos(){
+                print("Stitched")
+            }
+            else{
+                print("Stitching failed")
+
+            }
         }
         imagePicker.dismiss(animated: true, completion: nil)
         acc.startRecordingSensorsData()
