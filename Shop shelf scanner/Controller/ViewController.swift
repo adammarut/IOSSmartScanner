@@ -12,6 +12,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     @IBOutlet weak var secondsLabel: UITextField!
     @IBOutlet weak var imageBox: UIImageView!
     
+    @IBOutlet weak var lastPhotoImageView: UIImageView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,12 +40,21 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     }
     @IBAction func settingsBtnTapped(_ sender: UIBarButtonItem) {
         navigationController?.popToRootViewController(animated: true)
-        
+       
     }
+    
+    @IBAction func galleryTapped(_ sender: UIBarButtonItem) {
+        performSegue(withIdentifier: "GallerySegue", sender: self)
+    }
+    
+    
     @IBAction func cameraTapped(_ sender: UIButton) {
         imagePicker.sourceType = .camera
         imagePicker.allowsEditing = false
         present(imagePicker, animated: true, completion: nil)
+        if (imageBox.image != nil){
+            lastPhotoImageView.image = imageBox.image
+        }
     }
     
     @IBAction func secondsChanged(_ sender: UIStepper) {
