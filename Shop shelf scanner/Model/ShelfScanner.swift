@@ -27,6 +27,8 @@ class AccelerometerHandler: NSObject{
     var bleDevices = Array<CBPeripheral>()
     var bleDevicesData: [BleDevice] = []
     var shelfPhotos: [UIImage] = []
+    var stitchedShelfPhotos: [UIImage] = []
+
     
     init(manager: CMMotionManager = CMMotionManager(), updateInterval: Double) {
         self.manager = manager
@@ -140,6 +142,10 @@ class AccelerometerHandler: NSObject{
     func addPhoto(image: UIImage)
     {
         self.shelfPhotos.append(image)
+        if shelfPhotos.count>1
+        {
+            self.stitchPhotos()
+        }
     }
     
     func getBLEDevices(){
@@ -176,6 +182,8 @@ class AccelerometerHandler: NSObject{
             if stitchedPhoto == nil{
                 return false
             }
+            stitchedShelfPhotos.append(stitchedPhoto)
+            print("Stitched photos \(stitchedShelfPhotos.count)")
             return true
         }
         return false
