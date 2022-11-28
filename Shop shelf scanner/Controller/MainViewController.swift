@@ -3,7 +3,7 @@ import AVFoundation
 import UniformTypeIdentifiers
 
 
-class MainViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate{
+class MainViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, AVCapturePhotoCaptureDelegate{
 
    // let imagePicker = UIImagePickerController()
     //Camera device
@@ -30,6 +30,8 @@ class MainViewController: UIViewController, UIImagePickerControllerDelegate, UIN
       var previewLayer:AVCaptureVideoPreviewLayer!
       var captureDevice : AVCaptureDevice!
       let session = AVCaptureSession()
+    private let photoOutput = AVCapturePhotoOutput()
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -119,12 +121,13 @@ class MainViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     
     
     @IBAction func cameraTapped(_ sender: UIButton) {
-        if (imageBox.image != nil){
-            lastPhotoImageView.image = imageBox.image
-            let cropped = cropToBounds(image: imageBox.image!, width: 130.0, height: 649.0)
-            overlayPhotoImageView.image = cropped.alpha(0.5)
-            
-        }
+        handleTakePhoto()
+//        if (imageBox.image != nil){
+//            lastPhotoImageView.image = imageBox.image
+//            let cropped = cropToBounds(image: imageBox.image!, width: 130.0, height: 649.0)
+//            overlayPhotoImageView.image = cropped.alpha(0.5)
+//
+//        }
     }
     
     
@@ -258,11 +261,13 @@ extension MainViewController:  AVCaptureVideoDataOutputSampleBufferDelegate{
             videoDataOutputQueue = DispatchQueue(label: "VideoDataOutputQueue")
             videoDataOutput.setSampleBufferDelegate(self, queue:self.videoDataOutputQueue)
 
-            if session.canAddOutput(self.videoDataOutput){
-                session.addOutput(self.videoDataOutput)
+            if session.canAddOutput(self.photoOutput){
+                session.addOutput(self.photoOutput)
             }
+    
 
             videoDataOutput.connection(with: .video)?.isEnabled = true
+            photoOutput.connection(with: .video)?.isEnabled = true
 
             previewLayer = AVCaptureVideoPreviewLayer(session: self.session)
             previewLayer.videoGravity = AVLayerVideoGravity.resizeAspect
@@ -287,5 +292,40 @@ extension MainViewController:  AVCaptureVideoDataOutputSampleBufferDelegate{
     func stopCamera(){
         session.stopRunning()
     }
+    
+    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error:Error?)
+    {
+        guard let imageData = photo.fileDataRepresentation() else{return}
+        let previewImage = UIImage(data: imageData)!
 
+        overlayPhotoImageView.image = cropImage(previewImage, toRect: CGRect(x: (2*previewImage.size.width)/3, y: 0, width: (previewImage.size.width/3)-1, height: previewImage.size.height))
+    }
+    
+    @objc private func handleTakePhoto(){
+        let photoSettings = AVCapturePhotoSettings()
+        if let photoPreviewType = photoSettings.availablePreviewPhotoPixelFormatTypes.first{
+            photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String: photoPreviewType]
+            photoOutput.capturePhoto(with: photoSettings, delegate: self)
+        }
+    }
+    func cropImage(_ inputImage: UIImage, toRect cropRect: CGRect) -> UIImage?
+    {
+        
+
+        // Scale cropRect to handle images larger than shown-on-screen size
+        let cropZone = CGRect(x:cropRect.origin.x ,
+                              y:cropRect.origin.y ,
+                              width:cropRect.size.width ,
+                              height:cropRect.size.height)
+
+        // Perform cropping in Core Graphics
+        guard let cutImageRef: CGImage = inputImage.cgImage?.cropping(to:cropZone)
+        else {
+            return nil
+        }
+
+        // Return image to UIImage
+        let croppedImage: UIImage = UIImage(cgImage: cutImageRef)
+        return croppedImage
+    }
 }
