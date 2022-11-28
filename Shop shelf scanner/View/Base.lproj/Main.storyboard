@@ -14,7 +14,7 @@
         <!--Login View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController title="Login View Controller" id="BYZ-38-t0r" customClass="ViewController" customModule="Shop_shelf_scanner" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Login View Controller" id="BYZ-38-t0r" customClass="LoginViewController" customModule="Shop_shelf_scanner" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -41,7 +41,7 @@
                                     <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </buttonConfiguration>
                                 <connections>
-                                    <action selector="LoginButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Enz-y1-sHl"/>
+                                    <action selector="loginButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="hqG-gQ-JeI"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -61,7 +61,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="SSK-58-ynT"/>
                     <connections>
-                        <outlet property="emailTxtBox" destination="Jvh-FS-mXO" id="ghb-rh-cwI"/>
+                        <outlet property="emailTxtBox" destination="Jvh-FS-mXO" id="IUm-Kp-PWO"/>
                         <segue destination="EkS-ou-RZh" kind="show" identifier="MainWindowSegue" id="kKp-Q8-85y"/>
                     </connections>
                 </viewController>
@@ -72,7 +72,7 @@
         <!--Main View Controller-->
         <scene sceneID="jVV-82-hSq">
             <objects>
-                <viewController title="Main View Controller" id="EkS-ou-RZh" customClass="ViewController" customModule="Shop_shelf_scanner" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Main View Controller" id="EkS-ou-RZh" customClass="MainViewController" customModule="Shop_shelf_scanner" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="uD6-e9-q1Z">
                         <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -163,7 +163,7 @@
         <!--Settings View Controller-->
         <scene sceneID="s7k-Hg-0An">
             <objects>
-                <viewController title="Settings View Controller" id="1Qo-aL-JUg" customClass="ViewController" customModule="Shop_shelf_scanner" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Settings View Controller" id="1Qo-aL-JUg" customClass="SettingsViewController" customModule="Shop_shelf_scanner" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="YeP-wL-MFU">
                         <rect key="frame" x="0.0" y="0.0" width="390" height="787"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -181,20 +181,23 @@
                                         <rect key="frame" x="0.0" y="64.333333333333329" width="370" height="34"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sensors timespan" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="R9a-bR-37g">
-                                                <rect key="frame" x="0.0" y="0.0" width="136" height="20.333333333333332"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="206" height="20.333333333333332"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="sec" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="JCm-8m-Kxd">
-                                                <rect key="frame" x="141" y="0.0" width="130" height="34"/>
+                                                <rect key="frame" x="211" y="0.0" width="60" height="34"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="60" id="oc4-HM-u55"/>
+                                                </constraints>
                                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                 <textInputTraits key="textInputTraits" keyboardType="decimalPad" returnKeyType="continue" enablesReturnKeyAutomatically="YES" smartInsertDeleteType="yes"/>
                                             </textField>
-                                            <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" maximumValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="Q4A-Ey-yw0">
+                                            <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="5" maximumValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="Q4A-Ey-yw0">
                                                 <rect key="frame" x="276" y="0.0" width="94" height="32"/>
                                                 <connections>
-                                                    <action selector="secondsChanged:" destination="1Qo-aL-JUg" eventType="valueChanged" id="wJu-Y0-a6L"/>
+                                                    <action selector="secondsChanged:" destination="1Qo-aL-JUg" eventType="valueChanged" id="LyW-en-CXC"/>
                                                 </connections>
                                             </stepper>
                                         </subviews>
@@ -318,8 +321,8 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="secondsLabel" destination="JCm-8m-Kxd" id="vAN-PI-36g"/>
-                        <outlet property="secondsStepper" destination="Q4A-Ey-yw0" id="hvp-tW-USh"/>
+                        <outlet property="secondsLabel" destination="JCm-8m-Kxd" id="Lg5-gj-VFz"/>
+                        <outlet property="secondsStepper" destination="Q4A-Ey-yw0" id="ffh-lf-ITJ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vFv-ok-Y7g" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

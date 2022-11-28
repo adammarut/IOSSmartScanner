@@ -3,21 +3,27 @@ import AVFoundation
 import UniformTypeIdentifiers
 
 
-class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate{
+class MainViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate{
 
-    let imagePicker = UIImagePickerController()
+   // let imagePicker = UIImagePickerController()
+    //Camera device
+    // Capture session
+//    var cameraSession: AVCaptureSession?
+//    // Photo output
+//    let cameraOutput = AVCapturePhotoOutput()
+//    // Video Preview
+//    let cameraPreviewLayer = AVCaptureVideoPreviewLayer()
+    
+    
     var acc = AccelerometerHandler(updateInterval: 1.0/60.0)
-    @IBOutlet weak var emailTxtBox: UITextField!
     @IBOutlet weak var overlayPhotoImageView: UIImageView!
-    @IBOutlet weak var secondsStepper: UIStepper!
-    @IBOutlet weak var secondsLabel: UITextField!
     @IBOutlet weak var imageBox: UIImageView!
     
     
     @IBOutlet weak var cameraView: UIView!
     @IBOutlet weak var lastPhotoImageView: UIImageView!
     var previewView : UIView!
-
+ 
     //Camera Capture requiered properties
       var videoDataOutput: AVCaptureVideoDataOutput!
       var videoDataOutputQueue: DispatchQueue!
@@ -27,30 +33,76 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        checkCameraPermissions()
         navigationItem.hidesBackButton = true
-        imagePicker.delegate = self
-       // previewView = UIView(frame: CGRect(x: 0,
-//                                                   y: 0,
-//                                                   width: UIScreen.main.bounds.size.width,
-//                                                   height: UIScreen.main.bounds.size.height))
-       // previewView.contentMode = UIView.ContentMode.scaleAspectFit
-      //  view.addSubview(previewView)
         
-        self.setupAVCapture()
 
-       // self.modalPresentationStyle = .fullScreen
-        // Do any additional setup after loading the view.
+        self.modalPresentationStyle = .fullScreen
     }
+    
+    private func checkCameraPermissions(){
+        switch AVCaptureDevice.authorizationStatus(for: .video){
+        case .notDetermined:
+            //Request camera accesss
+            AVCaptureDevice.requestAccess(for: .video){ [weak self] granted in
+                guard granted else{
+                    return
+                }
+                DispatchQueue.main.async {
+                    self?.setupAVCapture()
+                }
+            }
+        case .restricted:
+            break
+        case .denied:
+            break
+        case .authorized:
+            self.setupAVCapture()
+        @unknown default:
+            break
+        }
+    }
+    
+    
+    override var shouldAutorotate: Bool {
+            if (UIDevice.current.orientation == UIDeviceOrientation.landscapeLeft ||
+            UIDevice.current.orientation == UIDeviceOrientation.landscapeRight ||
+            UIDevice.current.orientation == UIDeviceOrientation.unknown) {
+                return false
+            }
+            else {
+                return true
+            }
+        }
 
-    @IBAction func LoginButtonTapped(_ sender: UIButton) {
-        performSegue(withIdentifier: "MainWindowSegue", sender: self)
-    }
+//    private func setUpCamera(){
+//        let session = AVCaptureSession()
+//        if let device = AVCaptureDevice.default(for: .video){
+//            do{
+//                let input = try AVCaptureDeviceInput(device: device)
+//                if session.canAddInput(input) {
+//                    session.addInput(input)
+//                }
+//                if session.canAddOutput(cameraOutput){
+//                    session.addOutput(cameraOutput)
+//                }
+//
+//                cameraPreviewLayer.videoGravity = .resizeAspectFill
+//                cameraPreviewLayer.session = session
+//                session.startRunning()
+//                self.cameraSession = session
+//            }
+//            catch{
+//                print(error)
+//            }
+//        }
+//    }
+//
+//
+//
+    
     @IBAction func settingsTapped(_ sender: UIBarButtonItem) {
         performSegue(withIdentifier: "SettingsSegue", sender: self)
-        secondsStepper.minimumValue = 1
-        secondsStepper.maximumValue = 120
-        secondsStepper.value = 3.0
-        secondsLabel.text = String(secondsStepper.value)
 
     }
     @IBAction func logOutTapped(_ sender: UIBarButtonItem) {
@@ -67,9 +119,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     
     @IBAction func cameraTapped(_ sender: UIButton) {
-        imagePicker.sourceType = .camera
-        imagePicker.allowsEditing = false
-        present(imagePicker, animated: true, completion: nil)
         if (imageBox.image != nil){
             lastPhotoImageView.image = imageBox.image
             let cropped = cropToBounds(image: imageBox.image!, width: 130.0, height: 649.0)
@@ -78,35 +127,31 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         }
     }
     
-    @IBAction func secondsChanged(_ sender: UIStepper) {
-        print(secondsStepper.value)
-        secondsLabel.text = String(secondsStepper.value)
-
-    }
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        
-        if let image = info[.originalImage] as? UIImage {
-            let imageData = image.pngData()
-            let base64String = imageData?.base64EncodedString()
-            self.acc.addRawData(rawData: base64String!)
-            self.imageBox.image = getImageFromBase64(stringData: base64String!)
-            acc.addPhoto(image: image)
-            if acc.stitchPhotos(){
-                print("Stitched")
-            }
-            else{
-                print("Stitching failed")
-
-            }
-        }
-        imagePicker.dismiss(animated: true, completion: nil)
-        acc.startRecordingSensorsData()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-            let data = self.acc.stopRecordingSensorData()
-            print("SHA256: \(getHash(data: data))")
-            
-        }
-    }
+    
+//    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+//
+//        if let image = info[.originalImage] as? UIImage {
+//            let imageData = image.pngData()
+//            let base64String = imageData?.base64EncodedString()
+//            self.acc.addRawData(rawData: base64String!)
+//            self.imageBox.image = getImageFromBase64(stringData: base64String!)
+//            acc.addPhoto(image: image)
+//            if acc.stitchPhotos(){
+//                print("Stitched")
+//            }
+//            else{
+//                print("Stitching failed")
+//
+//            }
+//        }
+//        imagePicker.dismiss(animated: true, completion: nil)
+//        acc.startRecordingSensorsData()
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+//            let data = self.acc.stopRecordingSensorData()
+//            print("SHA256: \(getHash(data: data))")
+//
+//        }
+//    }
     
 }
 func getImageFromBase64(stringData:String)->UIImage?{
@@ -181,7 +226,7 @@ extension UIImage{
     }
 }
 
-extension ViewController:  AVCaptureVideoDataOutputSampleBufferDelegate{
+extension MainViewController:  AVCaptureVideoDataOutputSampleBufferDelegate{
      func setupAVCapture(){
          session.sessionPreset = AVCaptureSession.Preset.hd4K3840x2160
         guard let device = AVCaptureDevice

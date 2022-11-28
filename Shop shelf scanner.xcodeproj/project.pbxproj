@@ -15,10 +15,12 @@
 		6628053C291B101C00984720 /* GalleryCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6628053B291B101C00984720 /* GalleryCollectionViewController.swift */; };
 		6629566B2905AD33009B4F51 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6629566A2905AD33009B4F51 /* AppDelegate.swift */; };
 		6629566D2905AD33009B4F51 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6629566C2905AD33009B4F51 /* SceneDelegate.swift */; };
-		6629566F2905AD33009B4F51 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6629566E2905AD33009B4F51 /* ViewController.swift */; };
+		6629566F2905AD33009B4F51 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6629566E2905AD33009B4F51 /* MainViewController.swift */; };
 		662956722905AD33009B4F51 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 662956702905AD33009B4F51 /* Main.storyboard */; };
 		662956742905AD38009B4F51 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 662956732905AD38009B4F51 /* Assets.xcassets */; };
 		662956772905AD38009B4F51 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 662956752905AD38009B4F51 /* LaunchScreen.storyboard */; };
+		667AF9DD293555CD00092F7D /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667AF9DC293555CD00092F7D /* LoginViewController.swift */; };
+		667AF9DF293559F000092F7D /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667AF9DE293559F000092F7D /* SettingsViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,11 +36,13 @@
 		662956672905AD33009B4F51 /* Shop shelf scanner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shop shelf scanner.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6629566A2905AD33009B4F51 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6629566C2905AD33009B4F51 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		6629566E2905AD33009B4F51 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		6629566E2905AD33009B4F51 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		662956712905AD33009B4F51 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		662956732905AD38009B4F51 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		662956762905AD38009B4F51 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		662956782905AD38009B4F51 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		667AF9DC293555CD00092F7D /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		667AF9DE293559F000092F7D /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		6D28B79CA6F0CE6C223E06DF /* Pods_Shop_shelf_scanner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Shop_shelf_scanner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B582155231956E1FD86FBF5 /* Pods-Shop shelf scanner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Shop shelf scanner.debug.xcconfig"; path = "Target Support Files/Pods-Shop shelf scanner/Pods-Shop shelf scanner.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -120,9 +124,11 @@
 		662956802905B323009B4F51 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				6629566E2905AD33009B4F51 /* ViewController.swift */,
+				6629566E2905AD33009B4F51 /* MainViewController.swift */,
 				66280537291B0C9000984720 /* PhotoCollectionViewCell.swift */,
 				6628053B291B101C00984720 /* GalleryCollectionViewController.swift */,
+				667AF9DC293555CD00092F7D /* LoginViewController.swift */,
+				667AF9DE293559F000092F7D /* SettingsViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -234,8 +240,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				667AF9DD293555CD00092F7D /* LoginViewController.swift in Sources */,
 				662805332919C3F400984720 /* OpenCVWrapper.mm in Sources */,
-				6629566F2905AD33009B4F51 /* ViewController.swift in Sources */,
+				6629566F2905AD33009B4F51 /* MainViewController.swift in Sources */,
+				667AF9DF293559F000092F7D /* SettingsViewController.swift in Sources */,
 				662805362919C42600984720 /* UIImage+Rotate.m in Sources */,
 				660C786129074E9C0076BC93 /* ShelfScanner.swift in Sources */,
 				66280538291B0C9000984720 /* PhotoCollectionViewCell.swift in Sources */,
