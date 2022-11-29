@@ -150,6 +150,7 @@ class MainViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     
     
     @IBAction func cameraTapped(_ sender: UIButton) {
+        showPhotoTakenAnimation()
 //        photoOutput.capturePhoto(with: AVCapturePhotoSettings(),
 //                                 delegate: self)
         if let photoOutputConnection = self.photoOutput.connection(with: .video) {
@@ -210,6 +211,14 @@ class MainViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         return nil
     }
     
+    func showPhotoTakenAnimation(){
+        DispatchQueue.main.async {
+                self.previewView.videoPreviewLayer.opacity = 0
+                UIView.animate(withDuration: 0.25) {
+                    self.previewView.videoPreviewLayer.opacity = 1
+                }
+            }
+    }
     
     //func cropToBounds(image: UIImage, width: Double, height: Double) -> UIImage {
     //
