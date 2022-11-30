@@ -90,8 +90,8 @@
                                     <action selector="cameraTapped:" destination="EkS-ou-RZh" eventType="touchUpInside" id="ox6-CJ-iBp"/>
                                 </connections>
                             </button>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qKY-5g-RF2">
-                                <rect key="frame" x="10" y="747" width="108" height="72"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="qKY-5g-RF2">
+                                <rect key="frame" x="10" y="742" width="108" height="72"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="108" id="VrP-FT-ZlO"/>
                                     <constraint firstAttribute="height" constant="72" id="o51-3s-Xal"/>
@@ -105,7 +105,10 @@
                         <viewLayoutGuide key="safeArea" id="lwP-ge-Ow8"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstAttribute="bottom" secondItem="qKY-5g-RF2" secondAttribute="bottom" constant="30" id="1vd-nu-eTh"/>
+                            <constraint firstItem="qKY-5g-RF2" firstAttribute="leading" secondItem="lwP-ge-Ow8" secondAttribute="leading" constant="20" id="5dF-yh-y7z"/>
                             <constraint firstItem="lwP-ge-Ow8" firstAttribute="bottom" secondItem="pnK-1p-cig" secondAttribute="bottom" constant="10" id="F3e-6s-2VZ"/>
+                            <constraint firstAttribute="bottom" secondItem="qKY-5g-RF2" secondAttribute="bottom" constant="30" id="XXW-1D-kTa"/>
                             <constraint firstItem="pnK-1p-cig" firstAttribute="centerX" secondItem="uD6-e9-q1Z" secondAttribute="centerX" id="wIe-kk-91p"/>
                             <constraint firstItem="qKY-5g-RF2" firstAttribute="leading" secondItem="lwP-ge-Ow8" secondAttribute="leading" constant="10" id="ylt-Vx-DxZ"/>
                         </constraints>

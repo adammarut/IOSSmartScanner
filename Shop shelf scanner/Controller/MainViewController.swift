@@ -32,18 +32,22 @@ class MainViewController: UIViewController, UIImagePickerControllerDelegate, UIN
       let session = AVCaptureSession()
     private let photoOutput = AVCapturePhotoOutput()
 
+    var photosArray: NSMutableArray = NSMutableArray()
+    var isPanoramic: Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
         checkCameraPermissions()
         navigationItem.hidesBackButton = true
         
-
+        
         self.modalPresentationStyle = .fullScreen
         self.previewView.videoPreviewLayer.videoGravity = .resizeAspectFill
-               self.previewView.videoPreviewLayer.session = self.session
+        self.previewView.videoPreviewLayer.session = self.session
         view.layer.insertSublayer(self.previewView.videoPreviewLayer, at: 0)
-
+        lastPhotoImageView.alpha = 1.0
+        view.layer.addSublayer(lastPhotoImageView.layer)
+        
     }
     
     override func viewDidLayoutSubviews() {
@@ -75,56 +79,35 @@ class MainViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     }
     
     
-    override var shouldAutorotate: Bool {
-            if (UIDevice.current.orientation == UIDeviceOrientation.landscapeLeft ||
-            UIDevice.current.orientation == UIDeviceOrientation.landscapeRight ||
-            UIDevice.current.orientation == UIDeviceOrientation.unknown) {
-                return false
-            }
-            else {
-                return true
-            }
-        }
-
-//    private func setUpCamera(){
-//        let session = AVCaptureSession()
-//        if let device = AVCaptureDevice.default(for: .video){
-//            do{
-//                let input = try AVCaptureDeviceInput(device: device)
-//                if session.canAddInput(input) {
-//                    session.addInput(input)
-//                }
-//                if session.canAddOutput(cameraOutput){
-//                    session.addOutput(cameraOutput)
-//                }
-//
-//                cameraPreviewLayer.videoGravity = .resizeAspectFill
-//                cameraPreviewLayer.session = session
-//                session.startRunning()
-//                self.cameraSession = session
+//    override var shouldAutorotate: Bool {
+//            if (UIDevice.current.orientation == UIDeviceOrientation.landscapeLeft ||
+//            UIDevice.current.orientation == UIDeviceOrientation.landscapeRight ||
+//            UIDevice.current.orientation == UIDeviceOrientation.unknown) {
+//                return false
 //            }
-//            catch{
-//                print(error)
+//            else {
+//                return true
 //            }
 //        }
-//    }
-//
-//
-//
+
     
     @IBAction func settingsTapped(_ sender: UIBarButtonItem) {
+        session.stopRunning()
         performSegue(withIdentifier: "SettingsSegue", sender: self)
 
     }
     @IBAction func logOutTapped(_ sender: UIBarButtonItem) {
+        session.stopRunning()
         navigationController?.popToRootViewController(animated: true)
     }
     @IBAction func settingsBtnTapped(_ sender: UIBarButtonItem) {
+        session.stopRunning()
         navigationController?.popToRootViewController(animated: true)
        
     }
     
     @IBAction func galleryTapped(_ sender: UIBarButtonItem) {
+        session.stopRunning()
         performSegue(withIdentifier: "GallerySegue", sender: self)
     }
     
@@ -260,34 +243,26 @@ extension MainViewController:  AVCaptureVideoDataOutputSampleBufferDelegate{
                 print("error: cant get deviceInput")
                 return
             }
-
+            
             if self.session.canAddInput(deviceInput){
                 self.session.addInput(deviceInput)
             }
-
+            
             videoDataOutput = AVCaptureVideoDataOutput()
             videoDataOutput.alwaysDiscardsLateVideoFrames=true
             videoDataOutputQueue = DispatchQueue(label: "VideoDataOutputQueue")
             videoDataOutput.setSampleBufferDelegate(self, queue:self.videoDataOutputQueue)
-
+            
             if session.canAddOutput(self.photoOutput){
                 session.addOutput(self.photoOutput)
             }
-    
-
+            
+            
             videoDataOutput.connection(with: .video)?.isEnabled = true
             photoOutput.connection(with: .video)?.isEnabled = true
-
-          //  previewLayer = AVCaptureVideoPreviewLayer(session: self.session)
-           // previewLayer.videoGravity = AVLayerVideoGravity.resizeAspect
-//            if (self.cameraView != nil){
-//                let rootLayer :CALayer = self.cameraView.layer
-//                rootLayer.masksToBounds=true
-//                previewLayer.frame = rootLayer.bounds
-//                rootLayer.addSublayer(self.previewLayer)
-                session.startRunning()
-          //  }
-        } catch let error as NSError {
+            session.startRunning()
+        }
+        catch let error as NSError {
             deviceInput = nil
             print("error: \(error.localizedDescription)")
         }
@@ -308,6 +283,12 @@ extension MainViewController:  AVCaptureVideoDataOutputSampleBufferDelegate{
         let previewImage = UIImage(data: imageData)!
 
         overlayPhotoImageView.image = OpenCVWrapper.cropFor(matchingPreview: previewImage)
+        photosArray.add(previewImage)
+        if photosArray.count > 1 {
+            let newStitchedImage = OpenCVWrapper.stitchPhotos(photosArray as! [Any], panoramicWarp: isPanoramic)
+            lastPhotoImageView.image = newStitchedImage
+            
+        }
        // cropImage(previewImage, toRect: CGRect(x: (2*previewImage.size.width)/3, y: 0, width: (previewImage.size.width/3)-1, height: previewImage.size.height))
     }
     
