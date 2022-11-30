@@ -22,7 +22,7 @@ class MainViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     
     @IBOutlet weak var cameraView: UIView!
     @IBOutlet weak var lastPhotoImageView: UIImageView!
-    var previewView : UIView!
+    var previewView = PreviewView()
  
     //Camera Capture requiered properties
       var videoDataOutput: AVCaptureVideoDataOutput!
@@ -40,7 +40,16 @@ class MainViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         
 
         self.modalPresentationStyle = .fullScreen
+        self.previewView.videoPreviewLayer.videoGravity = .resizeAspectFill
+               self.previewView.videoPreviewLayer.session = self.session
+        view.layer.insertSublayer(self.previewView.videoPreviewLayer, at: 0)
+
     }
+    
+    override func viewDidLayoutSubviews() {
+            super.viewDidLayoutSubviews()
+            previewView.frame = view.bounds
+        }
     
     private func checkCameraPermissions(){
         switch AVCaptureDevice.authorizationStatus(for: .video){
@@ -269,15 +278,15 @@ extension MainViewController:  AVCaptureVideoDataOutputSampleBufferDelegate{
             videoDataOutput.connection(with: .video)?.isEnabled = true
             photoOutput.connection(with: .video)?.isEnabled = true
 
-            previewLayer = AVCaptureVideoPreviewLayer(session: self.session)
-            previewLayer.videoGravity = AVLayerVideoGravity.resizeAspect
-            if (self.cameraView != nil){
-                let rootLayer :CALayer = self.cameraView.layer
-                rootLayer.masksToBounds=true
-                previewLayer.frame = rootLayer.bounds
-                rootLayer.addSublayer(self.previewLayer)
+          //  previewLayer = AVCaptureVideoPreviewLayer(session: self.session)
+           // previewLayer.videoGravity = AVLayerVideoGravity.resizeAspect
+//            if (self.cameraView != nil){
+//                let rootLayer :CALayer = self.cameraView.layer
+//                rootLayer.masksToBounds=true
+//                previewLayer.frame = rootLayer.bounds
+//                rootLayer.addSublayer(self.previewLayer)
                 session.startRunning()
-            }
+          //  }
         } catch let error as NSError {
             deviceInput = nil
             print("error: \(error.localizedDescription)")
@@ -298,7 +307,8 @@ extension MainViewController:  AVCaptureVideoDataOutputSampleBufferDelegate{
         guard let imageData = photo.fileDataRepresentation() else{return}
         let previewImage = UIImage(data: imageData)!
 
-        overlayPhotoImageView.image = cropImage(previewImage, toRect: CGRect(x: (2*previewImage.size.width)/3, y: 0, width: (previewImage.size.width/3)-1, height: previewImage.size.height))
+        overlayPhotoImageView.image = OpenCVWrapper.cropFor(matchingPreview: previewImage)
+       // cropImage(previewImage, toRect: CGRect(x: (2*previewImage.size.width)/3, y: 0, width: (previewImage.size.width/3)-1, height: previewImage.size.height))
     }
     
     @objc private func handleTakePhoto(){
@@ -308,6 +318,8 @@ extension MainViewController:  AVCaptureVideoDataOutputSampleBufferDelegate{
             photoOutput.capturePhoto(with: photoSettings, delegate: self)
         }
     }
+    
+    
     func cropImage(_ inputImage: UIImage, toRect cropRect: CGRect) -> UIImage?
     {
         
@@ -329,3 +341,13 @@ extension MainViewController:  AVCaptureVideoDataOutputSampleBufferDelegate{
         return croppedImage
     }
 }
+
+class PreviewView: UIView {
+        override class var layerClass: AnyClass {
+            return AVCaptureVideoPreviewLayer.self
+        }
+        
+        var videoPreviewLayer: AVCaptureVideoPreviewLayer {
+            return layer as! AVCaptureVideoPreviewLayer
+        }
+    }
