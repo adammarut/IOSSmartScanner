@@ -114,6 +114,7 @@ class MainViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     
     @IBAction func cameraTapped(_ sender: UIButton) {
         handleTakePhoto()
+        
 //        if (imageBox.image != nil){
 //            lastPhotoImageView.image = imageBox.image
 //            let cropped = cropToBounds(image: imageBox.image!, width: 130.0, height: 649.0)
@@ -156,42 +157,6 @@ func getImageFromBase64(stringData:String)->UIImage?{
         }
     }
     return nil
-}
-
-
-func cropToBounds(image: UIImage, width: Double, height: Double) -> UIImage {
-
-    let contextImage: UIImage = UIImage(cgImage: image.cgImage!)
-
-    let contextSize: CGSize = contextImage.size
-
-    var posX: CGFloat = 0.0
-    var posY: CGFloat = 0.0
-    var cgwidth: CGFloat = CGFloat(width)
-    var cgheight: CGFloat = CGFloat(height)
-
-    // See what size is longer and create the center off of that
-    if contextSize.width > contextSize.height {
-        posX = ((contextSize.width - contextSize.height) / 2)
-        posY = 0
-        cgwidth = contextSize.height
-        cgheight = contextSize.height
-    } else {
-        posX = 0
-        posY = ((contextSize.height - contextSize.width) / 2)
-        cgwidth = contextSize.width
-        cgheight = contextSize.width
-    }
-
-    let rect: CGRect = CGRectMake(posX, posY, cgwidth, cgheight)
-
-    // Create bitmap image from context using the rect
-    let imageRef = contextImage.cgImage!.cropping(to: rect)
-
-    // Create a new image based on the imageRef and rotate back to the original orientation
-    let image: UIImage = UIImage(cgImage: imageRef!, scale: image.scale, orientation: image.imageOrientation)
-
-    return image
 }
 
 //
@@ -281,15 +246,25 @@ extension MainViewController:  AVCaptureVideoDataOutputSampleBufferDelegate{
     {
         guard let imageData = photo.fileDataRepresentation() else{return}
         let previewImage = UIImage(data: imageData)!
-
+        
         overlayPhotoImageView.image = OpenCVWrapper.cropFor(matchingPreview: previewImage)
         photosArray.add(previewImage)
+        let imagePngData = previewImage.pngData()
+        let base64String = imagePngData?.base64EncodedString()
+        self.acc.addRawData(rawData: base64String!)
+        acc.startRecordingSensorsData()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+            let data = self.acc.stopRecordingSensorData()
+            print("SHA256: \(getHash(data: data))")
+            
+        }
+        
         if photosArray.count > 1 {
             let newStitchedImage = OpenCVWrapper.stitchPhotos(photosArray as! [Any], panoramicWarp: isPanoramic)
             lastPhotoImageView.image = newStitchedImage
             
         }
-       // cropImage(previewImage, toRect: CGRect(x: (2*previewImage.size.width)/3, y: 0, width: (previewImage.size.width/3)-1, height: previewImage.size.height))
+        // cropImage(previewImage, toRect: CGRect(x: (2*previewImage.size.width)/3, y: 0, width: (previewImage.size.width/3)-1, height: previewImage.size.height))
     }
     
     @objc private func handleTakePhoto(){

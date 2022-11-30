@@ -166,6 +166,7 @@ class AccelerometerHandler: NSObject{
     func addRawData(rawData:String)
     {
         self.rawPhotoData = rawData
+        startRecordingSensorsData()
     }
     func getJsonData()-> String
     {
@@ -178,7 +179,7 @@ class AccelerometerHandler: NSObject{
     
     func stitchPhotos()->Bool{
         if self.shelfPhotos.count>1{
-            let stitchedPhoto = OpenCVWrapper.stitchPhotos(self.shelfPhotos as! [Any], panoramicWarp: true)
+            let stitchedPhoto = OpenCVWrapper.stitchPhotos(self.shelfPhotos as! [Any], panoramicWarp: false)
             if stitchedPhoto == nil{
                 return false
             }
