@@ -10,6 +10,7 @@ import CoreMotion
 import UIKit
 import CryptoKit
 import CoreBluetooth
+import AVFoundation
 
 class AccelerometerHandler: NSObject{
     var manager = CMMotionManager()
@@ -65,7 +66,13 @@ class AccelerometerHandler: NSObject{
         let z:Double
     }
     
-    
+    func getPhotoDataWithTelemetry(photo: UIImage, duration: Int) async -> String
+    {
+        startRecordingSensorsData()
+        self.addPhoto(image: photo)
+        let data = stopRecordingSensorData(duration: Double(duration))
+            return data
+    }
     
     func startRecordingSensorsData(){
         self.getBLEDevices()
@@ -152,16 +159,18 @@ class AccelerometerHandler: NSObject{
         centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
     }
     
-    func stopRecordingSensorData() -> String
+    func stopRecordingSensorData(duration: Double) -> String
     {
-        self.manager.stopGyroUpdates()
-        self.manager.stopMagnetometerUpdates()
-        self.manager.stopAccelerometerUpdates()
-        self.manager.stopDeviceMotionUpdates()
-        self.centralManager?.stopScan()
-        print("Finished with \(self.accelData.count) telemetry records.")
-        
+         DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+            self.manager.stopGyroUpdates()
+            self.manager.stopMagnetometerUpdates()
+            self.manager.stopAccelerometerUpdates()
+            self.manager.stopDeviceMotionUpdates()
+            self.centralManager?.stopScan()
+            print("Finished with \(self.accelData.count) telemetry records.")
+        }
         return self.getJsonData()
+
     }
     func addRawData(rawData:String)
     {
@@ -180,9 +189,6 @@ class AccelerometerHandler: NSObject{
     func stitchPhotos()->Bool{
         if self.shelfPhotos.count>1{
             let stitchedPhoto = OpenCVWrapper.stitchPhotos(self.shelfPhotos as! [Any], panoramicWarp: false)
-            if stitchedPhoto == nil{
-                return false
-            }
             stitchedShelfPhotos.append(stitchedPhoto)
             print("Stitched photos \(stitchedShelfPhotos.count)")
             return true
@@ -219,10 +225,177 @@ extension AccelerometerHandler: CBCentralManagerDelegate{
     }
 }
 
+class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoCaptureDelegate, AVCaptureVideoDataOutputSampleBufferDelegate{
+    
+    //Camera Capture requiered properties
+    var videoDataOutput: AVCaptureVideoDataOutput!
+    var videoDataOutputQueue: DispatchQueue!
+    var previewLayer:AVCaptureVideoPreviewLayer!
+    var captureDevice : AVCaptureDevice!
+    let session = AVCaptureSession()
+    private let photoOutput = AVCapturePhotoOutput()
+    let cameraType: AVCaptureDevice.DeviceType
+    let cameraPreset:AVCaptureSession.Preset
+    var newPhoto: UIImage?
+
+    
+    init(cameraType:AVCaptureDevice.DeviceType, cameraPreset:AVCaptureSession.Preset) {
+        self.cameraType = cameraType
+        self.cameraPreset = cameraPreset
+       // self.checkCameraPermissions()
+    }
+    
+    func checkCameraPermissions(){
+        switch AVCaptureDevice.authorizationStatus(for: .video){
+        case .notDetermined:
+            //Request camera accesss
+            AVCaptureDevice.requestAccess(for: .video){ [weak self] granted in
+                guard granted else{
+                    return
+                }
+                DispatchQueue.main.async {
+                    self?.setupAVCapture()
+                }
+            }
+        case .restricted:
+            break
+        case .denied:
+            break
+        case .authorized:
+            self.setupAVCapture()
+        @unknown default:
+            break
+        }
+    }
+    
+    func setupAVCapture(){
+        session.sessionPreset = self.cameraPreset
+        guard let device = AVCaptureDevice
+            .default(AVCaptureDevice.DeviceType.builtInWideAngleCamera,
+                     for: .video,
+                     position: AVCaptureDevice.Position.back) else {
+            return
+        }
+        captureDevice = device
+        beginSession()
+    }
+    
+    func takePhoto()->UIImage{
+        //
+handleTakePhoto()
+//        while(self.newPhoto == nil)
+//        {
+//        }
+        let newPhotoCGImage = self.newPhoto?.cgImage?.copy()
+        let newPhotoUIImage = UIImage(cgImage: newPhotoCGImage!,
+                                      scale: self.newPhoto!.scale,
+                                      orientation: self.newPhoto!.imageOrientation)
+        self.newPhoto = nil
+        return newPhotoUIImage
+    }
+    
+    func beginSession(){
+        var deviceInput: AVCaptureDeviceInput!
+        
+        do {
+            deviceInput = try AVCaptureDeviceInput(device: captureDevice)
+            guard deviceInput != nil else {
+                print("error: cant get deviceInput")
+                return
+            }
+            
+            if self.session.canAddInput(deviceInput){
+                self.session.addInput(deviceInput)
+            }
+            
+            videoDataOutput = AVCaptureVideoDataOutput()
+            videoDataOutput.alwaysDiscardsLateVideoFrames = true
+            videoDataOutputQueue = DispatchQueue(label: "VideoDataOutputQueue")
+            videoDataOutput.setSampleBufferDelegate(self, queue:self.videoDataOutputQueue)
+            
+            if session.canAddOutput(self.photoOutput){
+                session.addOutput(self.photoOutput)
+            }
+            
+            
+            videoDataOutput.connection(with: .video)?.isEnabled = true
+            photoOutput.connection(with: .video)?.isEnabled = true
+            session.startRunning()
+        }
+        catch let error as NSError {
+            deviceInput = nil
+            print("error: \(error.localizedDescription)")
+        }
+    }
+    
+    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        // do stuff here
+    }
+
+    // clean up AVCapture
+    func stopCamera(){
+        session.stopRunning()
+    }
+    
+    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error:Error?)
+    {
+        guard let imageData = photo.fileDataRepresentation() else{return}
+        self.newPhoto = UIImage(data: imageData)!
+        //overlayPhotoImageView.image
+       // photosArray.add(previewImage)
+        
+    }
+    
+    @objc private func handleTakePhoto(){
+        let photoSettings = AVCapturePhotoSettings()
+        if let photoPreviewType = photoSettings.availablePreviewPhotoPixelFormatTypes.first{
+            photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String: photoPreviewType]
+            photoOutput.capturePhoto(with: photoSettings, delegate: self)
+        }
+    }
+    
+    
+}
+
 extension CMSensorDataList: Sequence {
     public typealias Iterator = NSFastEnumerationIterator
     public func makeIterator() -> NSFastEnumerationIterator {
         return NSFastEnumerationIterator(self)
+    }
+}
+
+class OpenCVHandler{
+    var photosArray: NSMutableArray = NSMutableArray()
+    var isPanoramic: Bool = false
+    
+}
+
+class ShelfScanner{
+    private var acc = AccelerometerHandler(updateInterval: 1.0/60.0)
+    private var photosArray: NSMutableArray = NSMutableArray()
+    private var cameraHandler = CameraHandler(cameraType: .builtInWideAngleCamera, cameraPreset: .hd4K3840x2160)
+    func takePhoto()-> UIImage{
+        
+        return cameraHandler.takePhoto()
+        
+    }
+    
+    
+    func getData(){
+       // let imagePngData = previewImage.pngData()
+     //   let base64String = imagePngData?.base64EncodedString()
+     //   self.acc.addRawData(rawData: base64String!)
+//        acc.startRecordingSensorsData()
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+//            let data = self.acc.stopRecordingSensorData()
+//            print("SHA256: \(getHash(data: data))")
+//        }
+        
+//        if photosArray.count > 1 {
+//            let newStitchedImage = OpenCVWrapper.stitchPhotos(photosArray as! [Any], panoramicWarp: isPanoramic)
+       //     lastPhotoImageView.image = newStitchedImage
+            
+     //   }
     }
 }
 
@@ -233,3 +406,125 @@ func getHash(data: String) -> String
     let hashFromData = hasher.finalize()
     return hashFromData.formatted()
 }
+
+func getImageFromBase64(stringData:String)->UIImage?{
+    if let imageData = Data(base64Encoded: stringData) {
+        if let image = UIImage(data: imageData) {
+           return image
+        }
+    }
+    return nil
+}
+
+func cropImage(_ inputImage: UIImage, toRect cropRect: CGRect) -> UIImage?
+{
+    // Scale cropRect to handle images larger than shown-on-screen size
+    let cropZone = CGRect(x:cropRect.origin.x ,
+                          y:cropRect.origin.y ,
+                          width:cropRect.size.width ,
+                          height:cropRect.size.height)
+
+    // Perform cropping in Core Graphics
+    guard let cutImageRef: CGImage = inputImage.cgImage?.cropping(to:cropZone)
+    else {
+        return nil
+    }
+
+    // Return image to UIImage
+    let croppedImage: UIImage = UIImage(cgImage: cutImageRef)
+    return croppedImage
+}
+
+
+//    override var shouldAutorotate: Bool {
+//            if (UIDevice.current.orientation == UIDeviceOrientation.landscapeLeft ||
+//            UIDevice.current.orientation == UIDeviceOrientation.landscapeRight ||
+//            UIDevice.current.orientation == UIDeviceOrientation.unknown) {
+//                return false
+//            }
+//            else {
+//                return true
+//            }
+//        }
+
+//extension CameraHandler:  AVCaptureVideoDataOutputSampleBufferDelegate{
+//     func setupAVCapture(){
+//         session.sessionPreset = AVCaptureSession.Preset.hd4K3840x2160
+//        guard let device = AVCaptureDevice
+//        .default(AVCaptureDevice.DeviceType.builtInWideAngleCamera,
+//                 for: .video,
+//                 position: AVCaptureDevice.Position.back) else {
+//                            return
+//        }
+//        captureDevice = device
+//        beginSession()
+//    }
+//
+//    func beginSession(){
+//        var deviceInput: AVCaptureDeviceInput!
+//
+//        do {
+//            deviceInput = try AVCaptureDeviceInput(device: captureDevice)
+//            guard deviceInput != nil else {
+//                print("error: cant get deviceInput")
+//                return
+//            }
+//            
+//            if self.session.canAddInput(deviceInput){
+//                self.session.addInput(deviceInput)
+//            }
+//            
+//            videoDataOutput = AVCaptureVideoDataOutput()
+//            videoDataOutput.alwaysDiscardsLateVideoFrames=true
+//            videoDataOutputQueue = DispatchQueue(label: "VideoDataOutputQueue")
+//            videoDataOutput.setSampleBufferDelegate(self, queue:self.videoDataOutputQueue)
+//            
+//            if session.canAddOutput(self.photoOutput){
+//                session.addOutput(self.photoOutput)
+//            }
+//            
+//            
+//            videoDataOutput.connection(with: .video)?.isEnabled = true
+//            photoOutput.connection(with: .video)?.isEnabled = true
+//            session.startRunning()
+//        }
+//        catch let error as NSError {
+//            deviceInput = nil
+//            print("error: \(error.localizedDescription)")
+//        }
+//    }
+//
+//    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+//        // do stuff here
+//    }
+//
+//    // clean up AVCapture
+//    func stopCamera(){
+//        session.stopRunning()
+//    }
+//    
+//    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error:Error?)
+//    {
+//        guard let imageData = photo.fileDataRepresentation() else{return}
+//        let previewImage = UIImage(data: imageData)!
+//        
+//        overlayPhotoImageView.image = OpenCVWrapper.cropFor(matchingPreview: previewImage)
+//        photosArray.add(previewImage)
+//        let imagePngData = previewImage.pngData()
+//        let base64String = imagePngData?.base64EncodedString()
+//        self.acc.addRawData(rawData: base64String!)
+//        acc.startRecordingSensorsData()
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+//            let data = self.acc.stopRecordingSensorData()
+//            print("SHA256: \(getHash(data: data)), size: \(data.count)")
+//            
+//        }
+//        
+//        if photosArray.count > 1 {
+//            let newStitchedImage = OpenCVWrapper.stitchPhotos(photosArray as! [Any], panoramicWarp: isPanoramic)
+//            lastPhotoImageView.image = newStitchedImage
+//            
+//        }
+//        // cropImage(previewImage, toRect: CGRect(x: (2*previewImage.size.width)/3, y: 0, width: (previewImage.size.width/3)-1, height: previewImage.size.height))
+//    }
+//    
