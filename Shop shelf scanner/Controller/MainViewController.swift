@@ -15,6 +15,8 @@ class MainViewController: UIViewController, UINavigationControllerDelegate{
     let cameraHandler = CameraHandler(cameraType: .builtInWideAngleCamera, cameraPreset: .hd4K3840x2160)
     let scanner = ShelfScanner()
     
+    var overlayIsOnLeft = true
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,6 +33,9 @@ class MainViewController: UIViewController, UINavigationControllerDelegate{
         overlayPhotoImageView.isUserInteractionEnabled = true
         overlayPhotoImageView.addGestureRecognizer(tapGestureRecognizer)
         overlayPhotoImageView.backgroundColor  = .red
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(updateOverlayPhotoOnDisplay(_:)), name: Notification.Name("PhotoUpdate"), object: nil)
+
 
     }
     
@@ -39,12 +44,29 @@ class MainViewController: UIViewController, UINavigationControllerDelegate{
         previewView.frame = view.bounds
     }
     
+    @objc func updateOverlayPhotoOnDisplay(_ notification: Notification) {
+        updateOverlayPhoto()
+    }
+    
     @objc func imageTapped(tapGestureRecognizer: UITapGestureRecognizer)
     {
         let tappedImage = tapGestureRecognizer.view as! UIImageView
         UIView.animate(withDuration: 0.3, delay: 0.1, options: [], animations: {
-            self.overlayPhotoImageView.center.x = self.view.bounds.width-self.overlayPhotoImageView.center.x
+            tappedImage.center.x = self.view.bounds.width-tappedImage.center.x
             }, completion: nil)
+        if tappedImage.center.x > self.view.bounds.width/2{
+            self.overlayIsOnLeft = false
+        }
+        else{
+            self.overlayIsOnLeft = true
+        }
+        self.updateOverlayPhoto()
+    }
+    
+    func updateOverlayPhoto(){
+        if let newPhoto = self.cameraHandler.getImage(imageViewIsOnTheLeft: self.overlayIsOnLeft){
+            self.overlayPhotoImageView.image = newPhoto
+        }
     }
     
     @IBAction func settingsTapped(_ sender: UIBarButtonItem) {
@@ -70,7 +92,6 @@ class MainViewController: UIViewController, UINavigationControllerDelegate{
                 self.previewView.videoPreviewLayer.opacity = 1
             }
         }
-        print("Zdjęcie")
         cameraHandler.takePhoto()
     }
 }

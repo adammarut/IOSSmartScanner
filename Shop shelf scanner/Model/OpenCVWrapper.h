@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (UIImage *)stitchPhotos:(UIImage *) source1 photo2: (UIImage *) source2 panoramicWarp:(BOOL) isPanoramic;;
 + (UIImage *)cropStitchedPhoto:(UIImage *) source;
 + (UIImage *)stitchPhotos:(NSArray *) photos panoramicWarp:(BOOL) isPanoramic;
-+ (UIImage *)cropForMatchingPreview:(UIImage *) source;
++ (UIImage *)cropForMatchingPreview:(UIImage *) source :(BOOL) isOnLeft;
 
 @end
 

@@ -114,10 +114,16 @@ return [NSString stringWithFormat:@"OpenCV Version %s",  CV_VERSION];
     return [OpenCVWrapper _imageFrom:[OpenCVWrapper _cropStichedImage:[OpenCVWrapper _matFrom:source]]];
 }
 
-+(UIImage *)cropForMatchingPreview:(UIImage *) source{
++(UIImage *)cropForMatchingPreview:(UIImage *) source :(BOOL) isOnLeft{
     UIImage* rotatedImage = [source rotateToImageOrientation];
     cv::Mat originalFrame = [OpenCVWrapper _matFrom:rotatedImage];
-    cv::Rect croppingRectangle = cv::Rect(2*(originalFrame.cols/3),0,originalFrame.cols/3, originalFrame.rows);
+    cv::Rect croppingRectangle;
+    if(isOnLeft){
+        croppingRectangle = cv::Rect(2*(originalFrame.cols/3),0,originalFrame.cols/3, originalFrame.rows);
+    }
+    else{
+        croppingRectangle = cv::Rect(0,0,originalFrame.cols/3, originalFrame.rows);
+    }
     cv::Mat result = originalFrame(croppingRectangle);
     return [OpenCVWrapper _imageFrom:result];
 }

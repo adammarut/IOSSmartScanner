@@ -280,20 +280,17 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
         beginSession()
     }
     
-    func takePhoto()->UIImage{
-        //
-handleTakePhoto()
-//        while(self.newPhoto == nil)
-//        {
-//        }
-        let newPhotoCGImage = self.newPhoto?.cgImage?.copy()
-        let newPhotoUIImage = UIImage(cgImage: newPhotoCGImage!,
-                                      scale: self.newPhoto!.scale,
-                                      orientation: self.newPhoto!.imageOrientation)
-        self.newPhoto = nil
-        return newPhotoUIImage
+    func takePhoto(){//}->UIImage{
+        handleTakePhoto()
+        
+        //        let newPhotoCGImage = self.newPhoto?.cgImage?.copy()
+        //        let newPhotoUIImage = UIImage(cgImage: newPhotoCGImage!,
+        //                                      scale: self.newPhoto!.scale,
+        //                                      orientation: self.newPhoto!.imageOrientation)
+        //        self.newPhoto = nil
+        //        return newPhotoUIImage
+        //    }
     }
-    
     func beginSession(){
         var deviceInput: AVCaptureDeviceInput!
         
@@ -337,13 +334,28 @@ handleTakePhoto()
         session.stopRunning()
     }
     
+    func getImage(imageViewIsOnTheLeft:Bool) -> UIImage? {
+        if let photo = self.newPhoto{
+            let croppedPhoto = OpenCVWrapper.cropFor(matchingPreview: photo, imageViewIsOnTheLeft)
+            return croppedPhoto
+            }
+        
+        return nil
+    }
+    
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error:Error?)
     {
         guard let imageData = photo.fileDataRepresentation() else{return}
         self.newPhoto = UIImage(data: imageData)!
+        print("Got photo")
+        updateOverlayPhoto()
         //overlayPhotoImageView.image
        // photosArray.add(previewImage)
         
+    }
+    
+    func updateOverlayPhoto() {
+        NotificationCenter.default.post(Notification(name: Notification.Name("PhotoUpdate")))
     }
     
     @objc private func handleTakePhoto(){
@@ -374,11 +386,10 @@ class ShelfScanner{
     private var acc = AccelerometerHandler(updateInterval: 1.0/60.0)
     private var photosArray: NSMutableArray = NSMutableArray()
     private var cameraHandler = CameraHandler(cameraType: .builtInWideAngleCamera, cameraPreset: .hd4K3840x2160)
-    func takePhoto()-> UIImage{
-        
-        return cameraHandler.takePhoto()
-        
-    }
+    
+//    func takePhoto()-> UIImage{
+//        return cameraHandler.takePhoto()
+//    }
     
     
     func getData(){
