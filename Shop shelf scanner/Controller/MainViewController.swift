@@ -39,6 +39,12 @@ class MainViewController: UIViewController, UINavigationControllerDelegate, Sett
         
         NotificationCenter.default.addObserver(self, selector: #selector(updateOverlayPhotoOnDisplay(_:)), name: Notification.Name("PhotoUpdate"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateOverlayOpacity(_:)), name: Notification.Name("overlayOpacityChanged"), object: nil)
+        let defaults = UserDefaults.standard
+        var overlayOpacity: Float
+        if  (defaults.object(forKey: "overlayOpacity") != nil){
+             overlayOpacity = defaults.float(forKey: "overlayOpacity")
+            opacityChanged(opacity: Double(overlayOpacity))
+        }
 //        if let settingsVC = storyboard?.instantiateViewController(withIdentifier: "Settings View Controller") as? SettingsViewController{
 //            settingsVC.delegate=self
 //
