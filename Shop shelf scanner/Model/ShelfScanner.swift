@@ -391,7 +391,9 @@ class ShelfScanner{
 //        return cameraHandler.takePhoto()
 //    }
     
-    
+    func endPanorama(){
+        
+    }
     func getData(){
        // let imagePngData = previewImage.pngData()
      //   let base64String = imagePngData?.base64EncodedString()

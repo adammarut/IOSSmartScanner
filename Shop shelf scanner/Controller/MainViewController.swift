@@ -2,8 +2,13 @@ import UIKit
 import AVFoundation
 import UniformTypeIdentifiers
 
-
-class MainViewController: UIViewController, UINavigationControllerDelegate{
+class MainViewController: UIViewController, UINavigationControllerDelegate, SettingsDelegate
+{
+    func opacityChanged(opacity:Double) {
+        overlayPhotoImageView.alpha = opacity
+    }
+    
+    
     
     @IBOutlet weak var overlayPhotoImageView: UIImageView!
     @IBOutlet weak var imageBox: UIImageView!
@@ -16,7 +21,6 @@ class MainViewController: UIViewController, UINavigationControllerDelegate{
     let scanner = ShelfScanner()
     
     var overlayIsOnLeft = true
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,11 +36,13 @@ class MainViewController: UIViewController, UINavigationControllerDelegate{
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
         overlayPhotoImageView.isUserInteractionEnabled = true
         overlayPhotoImageView.addGestureRecognizer(tapGestureRecognizer)
-        overlayPhotoImageView.backgroundColor  = .red
         
         NotificationCenter.default.addObserver(self, selector: #selector(updateOverlayPhotoOnDisplay(_:)), name: Notification.Name("PhotoUpdate"), object: nil)
-
-
+        NotificationCenter.default.addObserver(self, selector: #selector(updateOverlayOpacity(_:)), name: Notification.Name("overlayOpacityChanged"), object: nil)
+//        if let settingsVC = storyboard?.instantiateViewController(withIdentifier: "Settings View Controller") as? SettingsViewController{
+//            settingsVC.delegate=self
+//
+//        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -48,6 +54,14 @@ class MainViewController: UIViewController, UINavigationControllerDelegate{
         updateOverlayPhoto()
     }
     
+    @objc func updateOverlayOpacity(_ notification: Notification) {
+        if let value = notification.userInfo?["opacity"] as? Double{
+            opacityChanged(opacity: value)
+        }    }
+    
+    @IBAction func endPanoramaBtnTapped(_ sender: UIButton) {
+        scanner.endPanorama()
+    }
     @objc func imageTapped(tapGestureRecognizer: UITapGestureRecognizer)
     {
         let tappedImage = tapGestureRecognizer.view as! UIImageView
