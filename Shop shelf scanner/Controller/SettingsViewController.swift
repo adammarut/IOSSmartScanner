@@ -18,6 +18,7 @@ class SettingsViewController: UIViewController {
     @IBOutlet weak var frequencyControl: UISegmentedControl!
     @IBOutlet weak var opacitySlider: UISlider!
     weak var delegate: SettingsDelegate?
+    @IBOutlet weak var isPanoramicSwitch: UISwitch!
     override func viewDidLoad() {
         super.viewDidLoad()
         let defaults = UserDefaults.standard
@@ -46,6 +47,13 @@ class SettingsViewController: UIViewController {
         else{
             frequencyControl.selectedSegmentIndex = 3
         }
+        if  (defaults.object(forKey: "isPanoramic") != nil){
+            isPanoramicSwitch.isOn = defaults.bool(forKey: "isPanoramic")
+        }
+        else{
+            defaults.set(isPanoramicSwitch.isOn, forKey: "isPanoramic")
+
+        }
     }
     
     
@@ -57,6 +65,12 @@ class SettingsViewController: UIViewController {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "sensorsDurationChanged"), object: nil)
     }
     
+    @IBAction func panoramicModeChanged(_ sender: UISwitch) {
+        let defaults = UserDefaults.standard
+
+        defaults.set(sender.isOn, forKey: "isPanoramic")
+
+    }
     @IBAction func overlayOpacityChanged(_ sender: UISlider) {
         delegate?.opacityChanged(opacity:Double(sender.value))
         let defaults = UserDefaults.standard

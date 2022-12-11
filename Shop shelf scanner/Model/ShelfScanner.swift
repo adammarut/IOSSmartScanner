@@ -27,13 +27,13 @@ class AccelerometerHandler: NSObject{
     var centralManager: CBCentralManager?
     var bleDevices = Array<CBPeripheral>()
     var bleDevicesData: [BleDevice] = []
-    var shelfPhotos: [UIImage] = []
-    var stitchedShelfPhotos: [UIImage] = []
-
+    var duration: Double
     
-    init(manager: CMMotionManager = CMMotionManager(), updateInterval: Double) {
+    init(manager: CMMotionManager = CMMotionManager(), updateInterval: Double, duration: Double) {
         self.manager = manager
         self.updateInterval = updateInterval
+        self.duration = duration
+        
     }
     struct PackedData:Codable{
         let sensors_data: SensorsData
@@ -70,7 +70,7 @@ class AccelerometerHandler: NSObject{
     {
         startRecordingSensorsData()
         self.addPhoto(image: photo)
-        let data = stopRecordingSensorData(duration: Double(duration))
+        let data = stopRecordingSensorData()
             return data
     }
     
@@ -148,27 +148,23 @@ class AccelerometerHandler: NSObject{
     
     func addPhoto(image: UIImage)
     {
-        self.shelfPhotos.append(image)
-        if shelfPhotos.count>1
-        {
-            self.stitchPhotos()
-        }
+       // self.shelfPhotos.append(image)
+       
     }
     
     func getBLEDevices(){
         centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
     }
     
-    func stopRecordingSensorData(duration: Double) -> String
+    func stopRecordingSensorData() -> String
     {
-         DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
             self.manager.stopGyroUpdates()
             self.manager.stopMagnetometerUpdates()
             self.manager.stopAccelerometerUpdates()
             self.manager.stopDeviceMotionUpdates()
             self.centralManager?.stopScan()
             print("Finished with \(self.accelData.count) telemetry records.")
-        }
+        
         return self.getJsonData()
 
     }
@@ -186,15 +182,15 @@ class AccelerometerHandler: NSObject{
         return  String(data:stringJSON, encoding: .utf8)!
     }
     
-    func stitchPhotos()->Bool{
-        if self.shelfPhotos.count>1{
-            let stitchedPhoto = OpenCVWrapper.stitchPhotos(self.shelfPhotos as! [Any], panoramicWarp: false)
-            stitchedShelfPhotos.append(stitchedPhoto)
-            print("Stitched photos \(stitchedShelfPhotos.count)")
-            return true
-        }
-        return false
-    }
+//    func stitchPhotos()->Bool{
+//        if self.shelfPhotos.count>1{
+//            let stitchedPhoto = OpenCVWrapper.stitchPhotos(self.shelfPhotos as! [Any], panoramicWarp: false)
+//            stitchedShelfPhotos.append(stitchedPhoto)
+//            print("Stitched photos \(stitchedShelfPhotos.count)")
+//            return true
+//        }
+//        return false
+//    }
 }
 extension AccelerometerHandler: CBCentralManagerDelegate{
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
@@ -240,11 +236,38 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
     var currentStitched: UIImage?
     private var photosArray: NSMutableArray = NSMutableArray()
     private var arrayOfPhotosArray: NSMutableArray = NSMutableArray()
-
+    var isPanoramic = false
+    
+    private var acc: AccelerometerHandler?
+    let defaults = UserDefaults.standard
+    var sensorsDuration: Double
+    var frequency: Int
+    var currentData: String?
+    
     
     init(cameraType:AVCaptureDevice.DeviceType, cameraPreset:AVCaptureSession.Preset) {
         self.cameraType = cameraType
         self.cameraPreset = cameraPreset
+        if (defaults.object(forKey: "sensorsFrequency") != nil){
+            self.frequency = defaults.integer(forKey: "sensorsFrequency")
+        }
+        else{
+            self.frequency = 30
+        }
+        
+        if (defaults.object(forKey: "sensorsDuration") != nil){
+            self.sensorsDuration = defaults.double(forKey: "sensorsDuration")
+
+        }
+        else{
+            self.sensorsDuration = 3
+        }
+        if (defaults.object(forKey: "isPanoramic") != nil){
+            self.isPanoramic = defaults.bool(forKey: "isPanoramic")
+        }
+        
+        self.acc = AccelerometerHandler(updateInterval: 1.0/Double(frequency), duration: self.sensorsDuration )
+
     }
     
     func checkCameraPermissions(){
@@ -346,9 +369,10 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
         
         return nil
     }
+    
     func tryStitching()
     {
-        let newImage = OpenCVWrapper.stitchPhotos(self.photosArray as! [Any], panoramicWarp: false)
+        let newImage = OpenCVWrapper.stitchPhotos(self.photosArray as! [Any], panoramicWarp: self.isPanoramic)
         let newImageStitched:[String:UIImage] = ["stitched": newImage]
         self.currentStitched = newImage
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "stichedImage"), object: nil, userInfo: newImageStitched)
@@ -360,6 +384,7 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
         self.newPhoto = UIImage(data: imageData)!
         updateOverlayPhoto()
         photosArray.add(self.newPhoto)
+        getData()
         tryStitching()
     }
     
@@ -375,6 +400,17 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
         }
     }
     
+    func getData(){
+        let imagePngData = self.newPhoto!.pngData()
+        let base64String = imagePngData?.base64EncodedString()
+        self.acc!.addRawData(rawData: base64String!)
+        self.acc!.startRecordingSensorsData()
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.sensorsDuration) {
+            let data = self.acc!.stopRecordingSensorData()
+            self.currentData = data
+            print("SHA256: \(getHash(data: data)) with size of \(data.count)")
+        }
+    }
     
 }
 
@@ -396,7 +432,6 @@ class ShelfScanner{
     var frequency: Int
     
     
-    private var acc: AccelerometerHandler
     private var photosArray: NSMutableArray = NSMutableArray()
     private var cameraHandler: CameraHandler
     
@@ -410,15 +445,15 @@ class ShelfScanner{
         else{
             self.frequency = 30
         }
-        self.acc = AccelerometerHandler(updateInterval: 1.0/Double(frequency))
+       // self.acc = AccelerometerHandler(updateInterval: 1.0/Double(frequency))
     }
     func endPanorama(){
 
     }
-    func getData(){
-       // let imagePngData = previewImage.pngData()
-     //   let base64String = imagePngData?.base64EncodedString()
-     //   self.acc.addRawData(rawData: base64String!)
+//    func getData(){
+//        let imagePngData = previewImage.pngData()
+//        let base64String = imagePngData?.base64EncodedString()
+//        self.acc.addRawData(rawData: base64String!)
 //        acc.startRecordingSensorsData()
 //        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
 //            let data = self.acc.stopRecordingSensorData()
@@ -430,7 +465,7 @@ class ShelfScanner{
        //     lastPhotoImageView.image = newStitchedImage
             
      //   }
-    }
+//    }
 }
 
 func getHash(data: String) -> String

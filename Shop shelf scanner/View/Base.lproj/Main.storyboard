@@ -346,6 +346,9 @@
                                             </label>
                                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9UM-9z-fUj">
                                                 <rect key="frame" x="321" y="0.0" width="51" height="31"/>
+                                                <connections>
+                                                    <action selector="panoramicModeChanged:" destination="1Qo-aL-JUg" eventType="valueChanged" id="feX-73-DeH"/>
+                                                </connections>
                                             </switch>
                                         </subviews>
                                     </stackView>
@@ -379,6 +382,7 @@
                     </view>
                     <connections>
                         <outlet property="frequencyControl" destination="TOW-hf-8SP" id="Mez-uS-yUc"/>
+                        <outlet property="isPanoramicSwitch" destination="9UM-9z-fUj" id="dg9-uX-Tlz"/>
                         <outlet property="opacitySlider" destination="l6N-YB-laa" id="hJg-vw-5jR"/>
                         <outlet property="secondsLabel" destination="JCm-8m-Kxd" id="Lg5-gj-VFz"/>
                         <outlet property="secondsStepper" destination="Q4A-Ey-yw0" id="ffh-lf-ITJ"/>
