@@ -2,7 +2,7 @@ import UIKit
 import AVFoundation
 import UniformTypeIdentifiers
 
-class MainViewController: UIViewController, UINavigationControllerDelegate, SettingsDelegate
+class MainViewController: UIViewController, UINavigationControllerDelegate
 {
     func opacityChanged(opacity:Double) {
         overlayPhotoImageView.alpha = opacity
@@ -38,17 +38,16 @@ class MainViewController: UIViewController, UINavigationControllerDelegate, Sett
         overlayPhotoImageView.addGestureRecognizer(tapGestureRecognizer)
         
         NotificationCenter.default.addObserver(self, selector: #selector(updateOverlayPhotoOnDisplay(_:)), name: Notification.Name("PhotoUpdate"), object: nil)
+        
         NotificationCenter.default.addObserver(self, selector: #selector(updateOverlayOpacity(_:)), name: Notification.Name("overlayOpacityChanged"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateStitchedImage(_:)), name: Notification.Name("stichedImage"), object: nil)
+
         let defaults = UserDefaults.standard
         var overlayOpacity: Float
         if  (defaults.object(forKey: "overlayOpacity") != nil){
-             overlayOpacity = defaults.float(forKey: "overlayOpacity")
+            overlayOpacity = defaults.float(forKey: "overlayOpacity")
             opacityChanged(opacity: Double(overlayOpacity))
         }
-//        if let settingsVC = storyboard?.instantiateViewController(withIdentifier: "Settings View Controller") as? SettingsViewController{
-//            settingsVC.delegate=self
-//
-//        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -63,10 +62,18 @@ class MainViewController: UIViewController, UINavigationControllerDelegate, Sett
     @objc func updateOverlayOpacity(_ notification: Notification) {
         if let value = notification.userInfo?["opacity"] as? Double{
             opacityChanged(opacity: value)
-        }    }
-    
+        }
+    }
+    @objc func updateStitchedImage(_ notification: Notification){
+        if let value = notification.userInfo?["stitched"] as? UIImage{
+            lastPhotoImageView.image = value
+        }
+    }
     @IBAction func endPanoramaBtnTapped(_ sender: UIButton) {
+        print("")
         scanner.endPanorama()
+        cameraHandler.endStitching()
+        lastPhotoImageView.image = nil
     }
     @objc func imageTapped(tapGestureRecognizer: UITapGestureRecognizer)
     {

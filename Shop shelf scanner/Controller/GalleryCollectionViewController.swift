@@ -10,6 +10,7 @@ import UIKit
 private let reuseIdentifier = "photoCell"
 
 class GalleryCollectionViewController: UICollectionViewController {
+    private var stitchedImages: [StitchedImage] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,6 +20,7 @@ class GalleryCollectionViewController: UICollectionViewController {
 
         // Register cell classes
         self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateStitchedImage(_:)), name: Notification.Name("stichedImage"), object: nil)
 
         // Do any additional setup after loading the view.
     }
@@ -32,25 +34,32 @@ class GalleryCollectionViewController: UICollectionViewController {
         // Pass the selected object to the new view controller.
     }
     */
-
+    @objc func updateStitchedImage(_ notification: Notification){
+        if let value = notification.userInfo?["stitched"] as? UIImage{
+            var array:NSMutableArray = NSMutableArray()
+            array.add(value)
+            array.add(value)
+            stitchedImages.append(StitchedImage(stitchedImage: value, originals: array))        }
+    }
     // MARK: UICollectionViewDataSource
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return 0
+        return 1
     }
 
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
-        return 0
+        return stitchedImages.count
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
-    
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! PhotoCollectionViewCell
+        let stitchedImage = stitchedImages[indexPath.row]
         // Configure the cell
         cell.backgroundColor = .brown
+        cell.photoImageView.image = stitchedImage.stitchedImage
         return cell
     }
 

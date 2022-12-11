@@ -237,12 +237,13 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
     let cameraType: AVCaptureDevice.DeviceType
     let cameraPreset:AVCaptureSession.Preset
     var newPhoto: UIImage?
+    private var photosArray: NSMutableArray = NSMutableArray()
+    private var arrayOfPhotosArray: NSMutableArray = NSMutableArray()
 
     
     init(cameraType:AVCaptureDevice.DeviceType, cameraPreset:AVCaptureSession.Preset) {
         self.cameraType = cameraType
         self.cameraPreset = cameraPreset
-       // self.checkCameraPermissions()
     }
     
     func checkCameraPermissions(){
@@ -280,17 +281,16 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
         beginSession()
     }
     
-    func takePhoto(){//}->UIImage{
+    func takePhoto(){
         handleTakePhoto()
         
-        //        let newPhotoCGImage = self.newPhoto?.cgImage?.copy()
-        //        let newPhotoUIImage = UIImage(cgImage: newPhotoCGImage!,
-        //                                      scale: self.newPhoto!.scale,
-        //                                      orientation: self.newPhoto!.imageOrientation)
-        //        self.newPhoto = nil
-        //        return newPhotoUIImage
-        //    }
     }
+    
+    func endStitching(){
+        self.arrayOfPhotosArray.add(self.photosArray)
+        self.photosArray.removeAllObjects()
+    }
+    
     func beginSession(){
         var deviceInput: AVCaptureDeviceInput!
         
@@ -342,16 +342,20 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
         
         return nil
     }
+    func tryStitching()
+    {
+        let newImage = OpenCVWrapper.stitchPhotos(self.photosArray as! [Any], panoramicWarp: false)
+        let newImageStitched:[String:UIImage] = ["stitched": newImage]
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "stichedImage"), object: nil, userInfo: newImageStitched)
+    }
     
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error:Error?)
     {
         guard let imageData = photo.fileDataRepresentation() else{return}
         self.newPhoto = UIImage(data: imageData)!
-        print("Got photo")
         updateOverlayPhoto()
-        //overlayPhotoImageView.image
-       // photosArray.add(previewImage)
-        
+        photosArray.add(self.newPhoto)
+        tryStitching()
     }
     
     func updateOverlayPhoto() {
@@ -385,12 +389,17 @@ class OpenCVHandler{
 class ShelfScanner{
     private var acc = AccelerometerHandler(updateInterval: 1.0/60.0)
     private var photosArray: NSMutableArray = NSMutableArray()
-    private var cameraHandler = CameraHandler(cameraType: .builtInWideAngleCamera, cameraPreset: .hd4K3840x2160)
+    private var cameraHandler: CameraHandler
     
 //    func takePhoto()-> UIImage{
 //        return cameraHandler.takePhoto()
 //    }
-    
+//    init(cameraHandler: CameraHandler) {
+//        self.cameraHandler = cameraHandler
+//    }
+    init() {
+        cameraHandler = CameraHandler(cameraType: .builtInWideAngleCamera, cameraPreset: .hd4K3840x2160)
+    }
     func endPanorama(){
         
     }
