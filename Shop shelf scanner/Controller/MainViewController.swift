@@ -71,7 +71,7 @@ class MainViewController: UIViewController, UINavigationControllerDelegate
     
     @objc func updateSensorsFrequency(_ notification: Notification) {
         let defaults = UserDefaults.standard
-        cameraHandler.changeDuration(newDuration: defaults.double(forKey: "sensorsFrequency"))
+        cameraHandler.changeFrequency(newFrequency: defaults.double(forKey: "sensorsFrequency"))
     }
     
     @objc func updateOverlayOpacity(_ notification: Notification) {

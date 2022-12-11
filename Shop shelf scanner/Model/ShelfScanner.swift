@@ -15,7 +15,7 @@ import AVFoundation
 class AccelerometerHandler: NSObject{
     var manager = CMMotionManager()
     let recorder = CMSensorRecorder()
-    let updateInterval: Double
+    var updateInterval: Double
     var accelData: [XYZValue] = []
     var gyroData: [XYZValue] = []
     var magnetometerData: [XYZValue] = []
@@ -65,7 +65,10 @@ class AccelerometerHandler: NSObject{
         let y:Double
         let z:Double
     }
-       
+    func setFrequency(frequency:Double)
+    {
+        self.updateInterval = 1.0/frequency
+    }
     func startRecordingSensorsData(){
         self.accelData = []
         self.getBLEDevices()
@@ -191,6 +194,7 @@ extension AccelerometerHandler: CBCentralManagerDelegate{
         }
     }
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
+        self.bleDevices.removeAll()
         self.bleDevices.append(peripheral)
         
         if let name = peripheral.name{
@@ -313,7 +317,7 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
     {
         self.frequency = newFrequency
         print("Frequency changed \(self.frequency)")
-        self.acc = AccelerometerHandler(updateInterval: 1.0/frequency, duration: self.sensorsDuration )
+        self.acc!.setFrequency(frequency: newFrequency)
 
     }
     
