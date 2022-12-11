@@ -44,6 +44,7 @@ class MainViewController: UIViewController, UINavigationControllerDelegate
         NotificationCenter.default.addObserver(self, selector: #selector(updateOverlayOpacity(_:)), name: Notification.Name("overlayOpacityChanged"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateStitchedImage(_:)), name: Notification.Name("stichedImage"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateSensorsDuration(_:)), name: Notification.Name("sensorsDurationChanged"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateSensorsFrequency(_:)), name: Notification.Name("sensorsFrequencyChanged"), object: nil)
 
 
         let defaults = UserDefaults.standard
@@ -64,7 +65,13 @@ class MainViewController: UIViewController, UINavigationControllerDelegate
     }
    
     @objc func updateSensorsDuration(_ notification: Notification) {
-        //cameraHandler.()
+        let defaults = UserDefaults.standard
+        cameraHandler.changeDuration(newDuration: defaults.double(forKey: "sensorsDuration"))
+    }
+    
+    @objc func updateSensorsFrequency(_ notification: Notification) {
+        let defaults = UserDefaults.standard
+        cameraHandler.changeDuration(newDuration: defaults.double(forKey: "sensorsFrequency"))
     }
     
     @objc func updateOverlayOpacity(_ notification: Notification) {

@@ -110,6 +110,8 @@ class SettingsViewController: UIViewController {
         default:
             print("Frequency not choosen")
         }
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "sensorsFrequencyChanged"), object: nil)
+
     }
     /*
     // MARK: - Navigation

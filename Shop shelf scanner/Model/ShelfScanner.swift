@@ -65,20 +65,14 @@ class AccelerometerHandler: NSObject{
         let y:Double
         let z:Double
     }
-    
-    func getPhotoDataWithTelemetry(photo: UIImage, duration: Int) async -> String
-    {
-        startRecordingSensorsData()
-        self.addPhoto(image: photo)
-        let data = stopRecordingSensorData()
-            return data
-    }
-    
+       
     func startRecordingSensorsData(){
+        self.accelData = []
         self.getBLEDevices()
         
         //Get accelerometer data
         if manager.isAccelerometerAvailable{
+            self.accelData = []
             self.manager.accelerometerUpdateInterval = self.updateInterval
             self.manager.startAccelerometerUpdates(to: self.queue, withHandler: {(data,error) in
                 if let validData = data{
@@ -93,6 +87,7 @@ class AccelerometerHandler: NSObject{
         }
         //Get gyro data
         if manager.isGyroAvailable{
+            self.gyroData = []
             self.manager.gyroUpdateInterval = self.updateInterval
             self.manager.startGyroUpdates(to: self.queue, withHandler: {(data,error) in
                 if let validData = data{
@@ -109,6 +104,7 @@ class AccelerometerHandler: NSObject{
         
         //Get magnetometer data
         if manager.isMagnetometerAvailable{
+            self.magnetometerData=[]
             self.manager.magnetometerUpdateInterval = self.updateInterval
             self.manager.startMagnetometerUpdates(to: self.queue, withHandler: {(data,error) in
                 if let validData = data{
@@ -125,6 +121,7 @@ class AccelerometerHandler: NSObject{
         
         //Get attitude data
         if manager.isDeviceMotionAvailable {
+            self.attitudeData=[]
             self.manager.deviceMotionUpdateInterval = self.updateInterval
             self.manager.showsDeviceMovementDisplay = true
             self.manager.startDeviceMotionUpdates(using: .xMagneticNorthZVertical,
@@ -146,11 +143,6 @@ class AccelerometerHandler: NSObject{
         }
     }
     
-    func addPhoto(image: UIImage)
-    {
-       // self.shelfPhotos.append(image)
-       
-    }
     
     func getBLEDevices(){
         centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
@@ -241,7 +233,7 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
     private var acc: AccelerometerHandler?
     let defaults = UserDefaults.standard
     var sensorsDuration: Double
-    var frequency: Int
+    var frequency: Double
     var currentData: String?
     
     
@@ -249,10 +241,10 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
         self.cameraType = cameraType
         self.cameraPreset = cameraPreset
         if (defaults.object(forKey: "sensorsFrequency") != nil){
-            self.frequency = defaults.integer(forKey: "sensorsFrequency")
+            self.frequency = defaults.double(forKey: "sensorsFrequency")
         }
         else{
-            self.frequency = 30
+            self.frequency = 30.0
         }
         
         if (defaults.object(forKey: "sensorsDuration") != nil){
@@ -308,6 +300,21 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
     func takePhoto(){
         handleTakePhoto()
         
+    }
+    
+    func changeDuration(newDuration: Double)
+    {
+        self.sensorsDuration = newDuration
+        self.acc = AccelerometerHandler(updateInterval: 1.0/Double(frequency), duration: self.sensorsDuration )
+
+    }
+    
+    func changeFrequency(newFrequency: Double)
+    {
+        self.frequency = newFrequency
+        print("Frequency changed \(self.frequency)")
+        self.acc = AccelerometerHandler(updateInterval: 1.0/frequency, duration: self.sensorsDuration )
+
     }
     
     func endStitching(){
