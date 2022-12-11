@@ -387,18 +387,25 @@ class OpenCVHandler{
 }
 
 class ShelfScanner{
-    private var acc = AccelerometerHandler(updateInterval: 1.0/60.0)
+    let defaults = UserDefaults.standard
+    var frequency: Int
+    
+    
+    private var acc: AccelerometerHandler
     private var photosArray: NSMutableArray = NSMutableArray()
     private var cameraHandler: CameraHandler
     
-//    func takePhoto()-> UIImage{
-//        return cameraHandler.takePhoto()
-//    }
-//    init(cameraHandler: CameraHandler) {
-//        self.cameraHandler = cameraHandler
-//    }
+
     init() {
         cameraHandler = CameraHandler(cameraType: .builtInWideAngleCamera, cameraPreset: .hd4K3840x2160)
+        if (defaults.object(forKey: "sensorsFrequency") != nil){
+            self.frequency = defaults.integer(forKey: "sensorsFrequency")
+            
+        }
+        else{
+            self.frequency = 30
+        }
+        self.acc = AccelerometerHandler(updateInterval: 1.0/Double(frequency))
     }
     func endPanorama(){
         

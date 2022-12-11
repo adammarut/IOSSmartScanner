@@ -252,6 +252,9 @@
                                                     <segment title="50 Hz"/>
                                                     <segment title="60 Hz"/>
                                                 </segments>
+                                                <connections>
+                                                    <action selector="frequencyChanged:" destination="1Qo-aL-JUg" eventType="valueChanged" id="wxy-dD-hKQ"/>
+                                                </connections>
                                             </segmentedControl>
                                         </subviews>
                                     </stackView>
@@ -374,6 +377,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="frequencyControl" destination="TOW-hf-8SP" id="Mez-uS-yUc"/>
                         <outlet property="opacitySlider" destination="l6N-YB-laa" id="hJg-vw-5jR"/>
                         <outlet property="secondsLabel" destination="JCm-8m-Kxd" id="Lg5-gj-VFz"/>
                         <outlet property="secondsStepper" destination="Q4A-Ey-yw0" id="ffh-lf-ITJ"/>
