@@ -12,9 +12,11 @@ private let reuseIdentifier = "photoCell"
 class GalleryCollectionViewController: UICollectionViewController {
     private var stitchedImages: [StitchedImage] = []
 
+    @IBOutlet var stitchedCollectionView: UICollectionView!
     override func viewDidLoad() {
         super.viewDidLoad()
-
+//        stitchedCollectionView.dataSource = self
+//        stitchedCollectionView.delegate = self
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 

@@ -11,6 +11,7 @@ class MainViewController: UIViewController, UINavigationControllerDelegate
     
     
     @IBOutlet weak var overlayPhotoImageView: UIImageView!
+    @IBOutlet weak var endPanoramaButton: UIButton!
     @IBOutlet weak var imageBox: UIImageView!
     
     @IBOutlet weak var cameraView: UIView!
@@ -32,15 +33,18 @@ class MainViewController: UIViewController, UINavigationControllerDelegate
         view.layer.insertSublayer(self.previewView.videoPreviewLayer, at: 0)
         lastPhotoImageView.alpha = 1.0
         view.layer.addSublayer(lastPhotoImageView.layer)
-        
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
         overlayPhotoImageView.isUserInteractionEnabled = true
         overlayPhotoImageView.addGestureRecognizer(tapGestureRecognizer)
+        
+        endPanoramaButton.superview?.bringSubviewToFront(endPanoramaButton)
         
         NotificationCenter.default.addObserver(self, selector: #selector(updateOverlayPhotoOnDisplay(_:)), name: Notification.Name("PhotoUpdate"), object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(updateOverlayOpacity(_:)), name: Notification.Name("overlayOpacityChanged"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateStitchedImage(_:)), name: Notification.Name("stichedImage"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateSensorsDuration(_:)), name: Notification.Name("sensorsDurationChanged"), object: nil)
+
 
         let defaults = UserDefaults.standard
         var overlayOpacity: Float
@@ -57,6 +61,10 @@ class MainViewController: UIViewController, UINavigationControllerDelegate
     
     @objc func updateOverlayPhotoOnDisplay(_ notification: Notification) {
         updateOverlayPhoto()
+    }
+   
+    @objc func updateSensorsDuration(_ notification: Notification) {
+        //cameraHandler.()
     }
     
     @objc func updateOverlayOpacity(_ notification: Notification) {

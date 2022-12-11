@@ -54,8 +54,7 @@ class SettingsViewController: UIViewController {
         secondsLabel.text = String(Int(secondsStepper.value))
         let defaults = UserDefaults.standard
         defaults.set(sender.value, forKey: "sensorsDuration")
-    //    let opacityDict:[String:Double] = ["duration": Double(sender.value)]
-//        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "overlayOpacityChanged"), object: nil, userInfo: opacityDict)
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "sensorsDurationChanged"), object: nil)
     }
     
     @IBAction func overlayOpacityChanged(_ sender: UISlider) {

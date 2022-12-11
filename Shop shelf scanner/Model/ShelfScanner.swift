@@ -237,6 +237,7 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
     let cameraType: AVCaptureDevice.DeviceType
     let cameraPreset:AVCaptureSession.Preset
     var newPhoto: UIImage?
+    var currentStitched: UIImage?
     private var photosArray: NSMutableArray = NSMutableArray()
     private var arrayOfPhotosArray: NSMutableArray = NSMutableArray()
 
@@ -288,6 +289,9 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
     
     func endStitching(){
         self.arrayOfPhotosArray.add(self.photosArray)
+        if (self.currentStitched != nil){
+            UIImageWriteToSavedPhotosAlbum(self.currentStitched!, self, nil, nil)
+        }
         self.photosArray.removeAllObjects()
     }
     
@@ -346,6 +350,7 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
     {
         let newImage = OpenCVWrapper.stitchPhotos(self.photosArray as! [Any], panoramicWarp: false)
         let newImageStitched:[String:UIImage] = ["stitched": newImage]
+        self.currentStitched = newImage
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "stichedImage"), object: nil, userInfo: newImageStitched)
     }
     
@@ -408,7 +413,7 @@ class ShelfScanner{
         self.acc = AccelerometerHandler(updateInterval: 1.0/Double(frequency))
     }
     func endPanorama(){
-        
+
     }
     func getData(){
        // let imagePngData = previewImage.pngData()

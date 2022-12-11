@@ -153,6 +153,7 @@
                         </rightBarButtonItems>
                     </navigationItem>
                     <connections>
+                        <outlet property="endPanoramaButton" destination="mPK-dI-U4n" id="3gj-bO-IER"/>
                         <outlet property="lastPhotoImageView" destination="qKY-5g-RF2" id="bEa-za-Z0P"/>
                         <outlet property="overlayPhotoImageView" destination="Aox-VP-H1D" id="Ft2-2L-Miv"/>
                         <segue destination="U1S-li-kFq" kind="show" identifier="GallerySegue" id="k9z-ZO-Uzk"/>
@@ -432,6 +433,9 @@
                         </connections>
                     </collectionView>
                     <navigationItem key="navigationItem" id="gmh-8W-gVL"/>
+                    <connections>
+                        <outlet property="collectionView" destination="Tn9-gq-EFg" id="fHN-PB-X0f"/>
+                    </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="y3C-PF-ger" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
