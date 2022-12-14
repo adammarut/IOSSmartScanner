@@ -176,17 +176,8 @@ class AccelerometerHandler: NSObject{
         let stringJSON = try! encoder.encode(allData)
         return  String(data:stringJSON, encoding: .utf8)!
     }
-    
-//    func stitchPhotos()->Bool{
-//        if self.shelfPhotos.count>1{
-//            let stitchedPhoto = OpenCVWrapper.stitchPhotos(self.shelfPhotos as! [Any], panoramicWarp: false)
-//            stitchedShelfPhotos.append(stitchedPhoto)
-//            print("Stitched photos \(stitchedShelfPhotos.count)")
-//            return true
-//        }
-//        return false
-//    }
 }
+
 extension AccelerometerHandler: CBCentralManagerDelegate{
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if (central.state == .poweredOn){

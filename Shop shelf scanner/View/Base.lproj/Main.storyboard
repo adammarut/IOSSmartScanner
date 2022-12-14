@@ -91,8 +91,9 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mPK-dI-U4n">
-                                <rect key="frame" x="316" y="742" width="44" height="58"/>
+                                <rect key="frame" x="302" y="742" width="58" height="58"/>
                                 <constraints>
+                                    <constraint firstAttribute="width" constant="58" id="cvn-1i-I1h"/>
                                     <constraint firstAttribute="height" constant="58" id="kss-58-auG"/>
                                 </constraints>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
@@ -121,7 +122,6 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="qKY-5g-RF2" secondAttribute="bottom" constant="30" id="1vd-nu-eTh"/>
-                            <constraint firstItem="mPK-dI-U4n" firstAttribute="leading" secondItem="pnK-1p-cig" secondAttribute="trailing" constant="81" id="3HI-Ve-6sp"/>
                             <constraint firstItem="lwP-ge-Ow8" firstAttribute="bottom" secondItem="mPK-dI-U4n" secondAttribute="bottom" constant="10" id="3o0-sT-IhG"/>
                             <constraint firstItem="qKY-5g-RF2" firstAttribute="leading" secondItem="lwP-ge-Ow8" secondAttribute="leading" constant="20" id="5dF-yh-y7z"/>
                             <constraint firstItem="mPK-dI-U4n" firstAttribute="top" secondItem="qKY-5g-RF2" secondAttribute="top" id="9xD-yp-5ct"/>
