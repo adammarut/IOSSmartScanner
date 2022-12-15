@@ -174,6 +174,7 @@ class AccelerometerHandler: NSObject{
         let allData = PackedData(sensors_data: sensorsData, image: self.rawPhotoData!, UUID: device.identifierForVendor?.uuidString, ble_devices: self.bleDevicesData)
         let encoder = JSONEncoder()
         let stringJSON = try! encoder.encode(allData)
+        print(stringJSON.count)
         return  String(data:stringJSON, encoding: .utf8)!
     }
 }
@@ -375,9 +376,15 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
     func tryStitching()
     {
         let newImage = OpenCVWrapper.stitchPhotos(self.photosArray as! [Any], panoramicWarp: self.isPanoramic)
-        let newImageStitched:[String:UIImage] = ["stitched": newImage]
-        self.currentStitched = newImage
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "stichedImage"), object: nil, userInfo: newImageStitched)
+        if newImage != nil{
+            let croppedNewImage = OpenCVWrapper.cropStitchedPhoto(newImage)
+            let newImageStitched:[String:UIImage] = ["stitched": croppedNewImage]
+            self.currentStitched = croppedNewImage
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "stichedImage"), object: nil, userInfo: newImageStitched)
+        }
+        else{
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "stichingFailed"), object: nil, userInfo: nil)
+        }
     }
     
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error:Error?)
