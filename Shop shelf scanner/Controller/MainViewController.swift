@@ -14,6 +14,7 @@ class MainViewController: UIViewController, UINavigationControllerDelegate
     @IBOutlet weak var endPanoramaButton: UIButton!
     @IBOutlet weak var imageBox: UIImageView!
     
+    @IBOutlet weak var shutterButton: UIButton!
     @IBOutlet weak var cameraView: UIView!
     @IBOutlet weak var lastPhotoImageView: UIImageView!
     var previewView = PreviewView()
@@ -45,7 +46,7 @@ class MainViewController: UIViewController, UINavigationControllerDelegate
         NotificationCenter.default.addObserver(self, selector: #selector(updateStitchedImage(_:)), name: Notification.Name("stichedImage"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateSensorsDuration(_:)), name: Notification.Name("sensorsDurationChanged"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateSensorsFrequency(_:)), name: Notification.Name("sensorsFrequencyChanged"), object: nil)
-
+        NotificationCenter.default.addObserver(self, selector: #selector(stitchingFailed(_:)), name: Notification.Name("stichingFailed"), object: nil)
 
         let defaults = UserDefaults.standard
         var overlayOpacity: Float
@@ -64,6 +65,10 @@ class MainViewController: UIViewController, UINavigationControllerDelegate
         updateOverlayPhoto()
     }
    
+    @objc func stitchingFailed(_ notification: Notification) {
+        
+    }
+       
     @objc func updateSensorsDuration(_ notification: Notification) {
         let defaults = UserDefaults.standard
         cameraHandler.changeDuration(newDuration: defaults.double(forKey: "sensorsDuration"))

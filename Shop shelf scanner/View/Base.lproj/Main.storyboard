@@ -83,6 +83,7 @@
                                     <constraint firstAttribute="height" constant="60" id="Dht-Rn-qBb"/>
                                     <constraint firstAttribute="width" constant="80" id="Oc8-N1-smL"/>
                                 </constraints>
+                                <color key="tintColor" systemColor="tintColor"/>
                                 <buttonConfiguration key="configuration" style="filled">
                                     <imageReference key="image" image="camera.viewfinder" catalog="system" symbolScale="large"/>
                                 </buttonConfiguration>
@@ -156,6 +157,7 @@
                         <outlet property="endPanoramaButton" destination="mPK-dI-U4n" id="3gj-bO-IER"/>
                         <outlet property="lastPhotoImageView" destination="qKY-5g-RF2" id="bEa-za-Z0P"/>
                         <outlet property="overlayPhotoImageView" destination="Aox-VP-H1D" id="Ft2-2L-Miv"/>
+                        <outlet property="shutterButton" destination="pnK-1p-cig" id="s4W-p6-6kt"/>
                         <segue destination="U1S-li-kFq" kind="show" identifier="GallerySegue" id="k9z-ZO-Uzk"/>
                     </connections>
                 </viewController>
@@ -471,6 +473,9 @@
         <image name="stop.circle" catalog="system" width="128" height="123"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="tintColor">
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
