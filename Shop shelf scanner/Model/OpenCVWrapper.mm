@@ -36,12 +36,12 @@ return [NSString stringWithFormat:@"OpenCV Version %s",  CV_VERSION];
 
 + (UIImage *)stitchPhotos:(NSArray *) photos panoramicWarp:(BOOL) isPanoramic{
     Mat output;
-    vector<Mat> frames ;
+    vector<Mat> *frames = new std::vector<Mat>();
     
     for(UIImage *image in photos)
     {
         UIImage* rotatedImage = [image rotateToImageOrientation];
-        frames.push_back([OpenCVWrapper _matFrom:rotatedImage]);
+        frames->push_back([OpenCVWrapper _matFrom:rotatedImage]);
     }
     
     cv::Ptr<Stitcher> pStitcher = nullptr;
@@ -58,9 +58,10 @@ return [NSString stringWithFormat:@"OpenCV Version %s",  CV_VERSION];
 
     }
     try{
-        Stitcher::Status stitcherSuccess = pStitcher->stitch(frames, output);
+        Stitcher::Status stitcherSuccess = pStitcher->stitch(*frames, output);
         if(stitcherSuccess==Stitcher::OK)
         {
+            delete frames;
             return [OpenCVWrapper _imageFrom:output];
         }
     }
@@ -70,10 +71,12 @@ return [NSString stringWithFormat:@"OpenCV Version %s",  CV_VERSION];
     }
 
     cout<< "Can't stitch images: "<<endl;
+    delete frames;
+
     return nil;}
 
 
-+(UIImage *)stitchPhotos:(UIImage *) source1 photo2: (UIImage *) source2 panoramicWarp:(BOOL) isPanoramic;{
++(UIImage *)stitchPhotos:(UIImage *) source1 photo2: (UIImage *) source2 panoramicWarp:(BOOL) isPanoramic{
     Mat output;
     vector<Mat> frames ;
     
@@ -156,8 +159,7 @@ return [NSString stringWithFormat:@"OpenCV Version %s",  CV_VERSION];
     CGContextDrawImage(context, CGRectMake(0.0f, 0.0f, cols, rows), image);
     CGContextRelease(context);
     cvtColor(result,result,COLOR_BGRA2BGR);
-    
-    
+    CGImageRelease(image);
     return result;
 }
 
@@ -174,6 +176,7 @@ return [NSString stringWithFormat:@"OpenCV Version %s",  CV_VERSION];
     CGColorSpaceRef colorSpace = (source.elemSize() == 1 ? CGColorSpaceCreateDeviceGray() : CGColorSpaceCreateDeviceRGB());
     
     CGImageRef image = CGImageCreate(source.cols, source.rows, bitsPerComponent, bitsPerComponent * source.elemSize(), bytesPerRow, colorSpace, bitmapFlags, provider, NULL, false, kCGRenderingIntentDefault);
+    
     UIImage *result = [UIImage imageWithCGImage:image];
     
     CGImageRelease(image);
