@@ -15,8 +15,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)openCVVersionString;
 + (UIImage *) toGray:(UIImage *)source;
-+ (UIImage *)stitchPhotos:(UIImage *) source1 photo2: (UIImage *) source2 panoramicWarp:(BOOL) isPanoramic;;
++ (UIImage *)stitchPhotos:(UIImage *) source1 photo2: (UIImage *) source2 panoramicWarp:(BOOL) isPanoramic confidenceThresh:(float) confidenceThresh;
++ (UIImage *)stitchPhotos:(UIImage *) source1 photo2: (UIImage *) source2 panoramicWarp:(BOOL) isPanoramic;
 + (UIImage *)cropStitchedPhoto:(UIImage *) source;
++ (UIImage *)stitchPhotos:(NSArray *) photos panoramicWarp:(BOOL) isPanoramic confidenceThresh:(float) confidenceThresh;
 + (UIImage *)stitchPhotos:(NSArray *) photos panoramicWarp:(BOOL) isPanoramic;
 + (UIImage *)cropForMatchingPreview:(UIImage *) source :(BOOL) isOnLeft;
 

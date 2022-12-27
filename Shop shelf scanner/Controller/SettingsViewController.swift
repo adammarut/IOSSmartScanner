@@ -16,6 +16,8 @@ class SettingsViewController: UIViewController {
     @IBOutlet weak var secondsLabel: UITextField!
     
     @IBOutlet weak var frequencyControl: UISegmentedControl!
+    @IBOutlet weak var stitchingConfSlider: UISlider!
+    @IBOutlet weak var stitchingConfTextBox: UITextField!
     @IBOutlet weak var opacitySlider: UISlider!
     weak var delegate: SettingsDelegate?
     @IBOutlet weak var isPanoramicSwitch: UISwitch!
@@ -52,10 +54,23 @@ class SettingsViewController: UIViewController {
         }
         else{
             defaults.set(isPanoramicSwitch.isOn, forKey: "isPanoramic")
-
         }
+        if  (defaults.object(forKey: "stitchingConf") != nil){
+            stitchingConfSlider.value = defaults.float(forKey: "stitchingConf")
+            self.stitchingConfidenceThreshChanged(stitchingConfSlider)
+        }
+        
     }
     
+    @IBAction func stitchingConfidenceThreshChanged(_ sender: UISlider) {
+        let stitchingConfidence = sender.value
+        let stitchingConfidencePercent = Int(stitchingConfidence*100)
+        self.stitchingConfTextBox.text = String(stitchingConfidencePercent) + " %"
+        let defaults = UserDefaults.standard
+        defaults.set(sender.value, forKey: "stitchingConf")
+        let infoDict:[String:Float] = ["stitchingConf": Float(sender.value)]
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "stitchingConfChanged"), object: nil, userInfo: infoDict)
+    }
     
     @IBAction func secondsChanged(_ sender: UIStepper) {
         print(secondsStepper.value)

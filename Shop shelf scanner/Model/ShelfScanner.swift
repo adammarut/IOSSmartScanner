@@ -232,6 +232,7 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
     var frequency: Double
     var currentData: String?
     var isConsecutive: Bool = false
+    var stitchingConfidence:Float
     
     
     init(cameraType:AVCaptureDevice.DeviceType, cameraPreset:AVCaptureSession.Preset) {
@@ -243,10 +244,17 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
         else{
             self.frequency = 30.0
         }
+        if(defaults.object(forKey: "stitchingConf") != nil){
+            self.stitchingConfidence = defaults.float(forKey: "stitchingConf")
+        }
+        else
+        {
+            self.stitchingConfidence = 0.5
+        }
         
         if (defaults.object(forKey: "sensorsDuration") != nil){
             self.sensorsDuration = defaults.double(forKey: "sensorsDuration")
-
+            
         }
         else{
             self.sensorsDuration = 3
@@ -259,9 +267,11 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
         }
         
         self.acc = AccelerometerHandler(updateInterval: 1.0/Double(frequency), duration: self.sensorsDuration )
-
     }
-    
+    func setStitchingConf(_ newValue: Float)
+    {
+        self.stitchingConfidence = newValue
+    }
     func changeStitchingMode(isConsecutive: Bool)
     {
         self.isConsecutive = isConsecutive
@@ -401,7 +411,8 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
             else{
                 let newImage = OpenCVWrapper.stitchPhotos(currentStitched!,
                                                           photo2: self.photosArray[self.photosArray.count-1] as! UIImage,
-                                                          panoramicWarp: self.isPanoramic)
+                                                          panoramicWarp: self.isPanoramic,
+                                                          confidenceThresh: self.stitchingConfidence)
                 if newImage != nil{
                     let croppedNewImage = OpenCVWrapper.cropStitchedPhoto(newImage)
                     let newImageStitched:[String:UIImage] = ["stitched": croppedNewImage]
@@ -422,7 +433,9 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
             }
             else{
                 
-                let newImage = OpenCVWrapper.stitchPhotos(self.photosArray as! [Any], panoramicWarp: self.isPanoramic)
+                let newImage = OpenCVWrapper.stitchPhotos(self.photosArray as! [Any],
+                                                          panoramicWarp: self.isPanoramic,
+                                                          confidenceThresh: self.stitchingConfidence)
                 if newImage != nil{
                     let croppedNewImage = OpenCVWrapper.cropStitchedPhoto(newImage)
                     let newImageStitched:[String:UIImage] = ["stitched": croppedNewImage]
@@ -441,7 +454,7 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
         guard let imageData = photo.fileDataRepresentation() else{return}
         self.newPhoto = UIImage(data: imageData)!
         updateOverlayPhoto()
-        photosArray.add(self.newPhoto)
+        photosArray.add(self.newPhoto as Any)
         getData(photo:UIImage(data: imageData)!)
         tryStitching()
     }

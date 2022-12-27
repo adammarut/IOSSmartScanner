@@ -26,7 +26,6 @@ using namespace cv;
 @implementation OpenCVWrapper
 #pragma mark Public
 +(UIImage *)toGray:(UIImage *)source{
-    std::cout<<"OpenCV: ";
     return [OpenCVWrapper _imageFrom:[OpenCVWrapper _grayFrom:[OpenCVWrapper _matFrom:source]]];
 }
 
@@ -34,7 +33,7 @@ using namespace cv;
 return [NSString stringWithFormat:@"OpenCV Version %s",  CV_VERSION];
 }
 
-+ (UIImage *)stitchPhotos:(NSArray *) photos panoramicWarp:(BOOL) isPanoramic{
++ (UIImage *)stitchPhotos:(NSArray *) photos panoramicWarp:(BOOL) isPanoramic confidenceThresh:(float) confidenceThresh{
     Mat output;
     vector<Mat> *frames = new std::vector<Mat>();
     
@@ -47,13 +46,13 @@ return [NSString stringWithFormat:@"OpenCV Version %s",  CV_VERSION];
     cv::Ptr<Stitcher> pStitcher = nullptr;
     if (isPanoramic){
         pStitcher= Stitcher::create(Stitcher::PANORAMA);
-        pStitcher->setPanoConfidenceThresh(0.5);
+        pStitcher->setPanoConfidenceThresh(confidenceThresh);
 
         cout<<"Panoramic"<<endl;
     }
     else{
         pStitcher= Stitcher::create(Stitcher::SCANS);
-        pStitcher->setPanoConfidenceThresh(0.5);
+        pStitcher->setPanoConfidenceThresh(confidenceThresh);
         cout<<"Scans"<<endl;
 
     }
@@ -73,10 +72,18 @@ return [NSString stringWithFormat:@"OpenCV Version %s",  CV_VERSION];
     cout<< "Can't stitch images: "<<endl;
     delete frames;
 
-    return nil;}
+    return nil;
+}
 
++ (UIImage *)stitchPhotos:(NSArray *) photos panoramicWarp:(BOOL) isPanoramic{
+    return [self stitchPhotos:photos panoramicWarp:isPanoramic confidenceThresh:0.5];
+}
 
-+(UIImage *)stitchPhotos:(UIImage *) source1 photo2: (UIImage *) source2 panoramicWarp:(BOOL) isPanoramic{
++ (UIImage *)stitchPhotos:(UIImage *) source1 photo2: (UIImage *) source2 panoramicWarp:(BOOL) isPanoramic{
+    return [self stitchPhotos:source1 photo2:source2 panoramicWarp:isPanoramic confidenceThresh:0.5];
+}
+
++(UIImage *)stitchPhotos:(UIImage *) source1 photo2: (UIImage *) source2 panoramicWarp:(BOOL) isPanoramic confidenceThresh:(float) confidenceThresh{
     Mat output;
     vector<Mat> frames ;
     
@@ -89,10 +96,13 @@ return [NSString stringWithFormat:@"OpenCV Version %s",  CV_VERSION];
     cv::Ptr<Stitcher> pStitcher = nullptr;
     if (isPanoramic){
         pStitcher= Stitcher::create(Stitcher::PANORAMA);
+        pStitcher->setPanoConfidenceThresh(confidenceThresh);
         cout<<"Panoramic"<<endl;
     }
     else{
         pStitcher= Stitcher::create(Stitcher::SCANS);
+        pStitcher->setPanoConfidenceThresh(confidenceThresh);
+
         cout<<"Scans"<<endl;
 
     }

@@ -49,7 +49,9 @@ class MainViewController: UIViewController, UINavigationControllerDelegate
         NotificationCenter.default.addObserver(self, selector: #selector(stitchingFailed(_:)), name: Notification.Name("stichingFailed"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(consecutiveStitching(_:)), name: Notification.Name("consecutiveStitchingChanged"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(panoramicStitching(_:)), name: Notification.Name("panoramicStitchingChanged"), object: nil)
-        
+        NotificationCenter.default.addObserver(self, selector: #selector(stitchingConfChanged(_:)), name: Notification.Name("stitchingConfChanged"), object: nil)
+
+   
         
 
         let defaults = UserDefaults.standard
@@ -65,6 +67,17 @@ class MainViewController: UIViewController, UINavigationControllerDelegate
         previewView.frame = view.bounds
     }
     
+    
+
+
+@objc func stitchingConfChanged(_ notification: Notification)
+{
+    if let value = notification.userInfo?["stitchingConf"] as? Float{
+        cameraHandler.setStitchingConf(value)
+        
+    }
+
+}
     @objc func updateOverlayPhotoOnDisplay(_ notification: Notification) {
         updateOverlayPhoto()
     }

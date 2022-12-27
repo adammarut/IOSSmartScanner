@@ -183,7 +183,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MhH-Fd-7Hq">
-                                        <rect key="frame" x="0.0" y="47" width="370" height="30"/>
+                                        <rect key="frame" x="0.0" y="42.666666666666671" width="370" height="30"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Overlay opacity" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tAj-KR-Yrm">
                                                 <rect key="frame" x="0.0" y="0.0" width="140" height="30"/>
@@ -203,13 +203,13 @@
                                         </subviews>
                                     </stackView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Additional data settings" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZLz-uQ-nY3">
-                                        <rect key="frame" x="0.0" y="101.33333333333334" width="370" height="23"/>
+                                        <rect key="frame" x="0.0" y="92.333333333333343" width="370" height="23"/>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="19"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleToFill" alignment="top" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="jgJ-fk-SO9">
-                                        <rect key="frame" x="0.0" y="148.33333333333334" width="370" height="34"/>
+                                        <rect key="frame" x="0.0" y="135" width="370" height="34"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sensors timespan" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="R9a-bR-37g">
                                                 <rect key="frame" x="0.0" y="0.0" width="206" height="20.333333333333332"/>
@@ -234,7 +234,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="Afs-hB-7va">
-                                        <rect key="frame" x="0.0" y="206.33333333333331" width="370" height="31"/>
+                                        <rect key="frame" x="0.0" y="188.33333333333334" width="370" height="31"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Frequency" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ua4-rw-Neo">
                                                 <rect key="frame" x="0.0" y="0.0" width="95" height="20.333333333333332"/>
@@ -262,7 +262,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="VE2-l7-adQ">
-                                        <rect key="frame" x="0.0" y="261.33333333333331" width="370" height="31"/>
+                                        <rect key="frame" x="0.0" y="239" width="370" height="31"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Accelerometer" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EXv-Vm-ymR">
                                                 <rect key="frame" x="0.0" y="0.0" width="321" height="20.333333333333332"/>
@@ -276,7 +276,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="MBz-N0-gZw">
-                                        <rect key="frame" x="0.0" y="316.66666666666669" width="370" height="31"/>
+                                        <rect key="frame" x="0.0" y="289.66666666666669" width="370" height="31"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Magnetometer" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3mK-uK-SGN">
                                                 <rect key="frame" x="0.0" y="0.0" width="321" height="20.333333333333332"/>
@@ -290,7 +290,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yzy-JZ-ePA">
-                                        <rect key="frame" x="0.0" y="371.66666666666669" width="370" height="31"/>
+                                        <rect key="frame" x="0.0" y="340.33333333333331" width="370" height="31"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Attitude" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XLZ-FN-7uh">
                                                 <rect key="frame" x="0.0" y="0.0" width="321" height="31"/>
@@ -304,7 +304,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ar7-5X-xBr">
-                                        <rect key="frame" x="0.0" y="426.66666666666669" width="370" height="31"/>
+                                        <rect key="frame" x="0.0" y="391" width="370" height="31"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Gyro" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="T0R-Tz-pof">
                                                 <rect key="frame" x="0.0" y="0.0" width="321" height="31"/>
@@ -318,7 +318,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xzd-wt-9kk">
-                                        <rect key="frame" x="0.0" y="481.66666666666663" width="370" height="31"/>
+                                        <rect key="frame" x="0.0" y="441.66666666666669" width="370" height="31"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="BLE devices" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BSi-o8-egg">
                                                 <rect key="frame" x="0.0" y="0.0" width="321" height="31"/>
@@ -332,13 +332,13 @@
                                         </subviews>
                                     </stackView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Camera settings" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0JK-n1-xfB">
-                                        <rect key="frame" x="0.0" y="537" width="370" height="23"/>
+                                        <rect key="frame" x="0.0" y="492" width="370" height="23"/>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="19"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Zae-8P-ka9">
-                                        <rect key="frame" x="0.0" y="584" width="370" height="31"/>
+                                        <rect key="frame" x="0.0" y="534.66666666666663" width="370" height="31"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Panoramic stitching" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Bea-ex-NZB">
                                                 <rect key="frame" x="0.0" y="0.0" width="321" height="31"/>
@@ -355,7 +355,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="ehF-B3-PDW">
-                                        <rect key="frame" x="0.0" y="639" width="370" height="31"/>
+                                        <rect key="frame" x="0.0" y="585.33333333333337" width="370" height="31"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Consecutive stitching" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gEE-Bu-sDZ">
                                                 <rect key="frame" x="0.0" y="0.0" width="321" height="20.333333333333332"/>
@@ -369,6 +369,35 @@
                                                     <action selector="consecutiveStitchingChanged:" destination="1Qo-aL-JUg" eventType="valueChanged" id="8R9-hL-dCm"/>
                                                 </connections>
                                             </switch>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="M1t-ps-Pcu">
+                                        <rect key="frame" x="0.0" y="636" width="370" height="34"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Stitching confidence" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Uik-Ml-ha7">
+                                                <rect key="frame" x="0.0" y="0.0" width="146" height="34"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="140" id="Mth-gm-dtX"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="0oa-nd-dEl">
+                                                <rect key="frame" x="144" y="0.0" width="178" height="35"/>
+                                                <connections>
+                                                    <action selector="overlayOpacityChanged:" destination="1Qo-aL-JUg" eventType="valueChanged" id="jUK-Py-kF9"/>
+                                                    <action selector="stitchingConfidenceThreshChanged:" destination="1Qo-aL-JUg" eventType="valueChanged" id="Zgs-qQ-E4V"/>
+                                                </connections>
+                                            </slider>
+                                            <textField opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" enabled="NO" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="50%" borderStyle="roundedRect" textAlignment="right" adjustsFontForContentSizeCategory="YES" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="cpa-dJ-RSt">
+                                                <rect key="frame" x="320" y="0.0" width="50" height="34"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="50" id="1TX-WJ-4xC"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <textInputTraits key="textInputTraits"/>
+                                            </textField>
                                         </subviews>
                                     </stackView>
                                 </subviews>
@@ -391,6 +420,8 @@
                         <outlet property="opacitySlider" destination="l6N-YB-laa" id="hJg-vw-5jR"/>
                         <outlet property="secondsLabel" destination="JCm-8m-Kxd" id="Lg5-gj-VFz"/>
                         <outlet property="secondsStepper" destination="Q4A-Ey-yw0" id="ffh-lf-ITJ"/>
+                        <outlet property="stitchingConfSlider" destination="0oa-nd-dEl" id="cM2-Qj-n9k"/>
+                        <outlet property="stitchingConfTextBox" destination="cpa-dJ-RSt" id="eKg-sG-HC2"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vFv-ok-Y7g" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
