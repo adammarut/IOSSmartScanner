@@ -47,6 +47,10 @@ class MainViewController: UIViewController, UINavigationControllerDelegate
         NotificationCenter.default.addObserver(self, selector: #selector(updateSensorsDuration(_:)), name: Notification.Name("sensorsDurationChanged"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateSensorsFrequency(_:)), name: Notification.Name("sensorsFrequencyChanged"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(stitchingFailed(_:)), name: Notification.Name("stichingFailed"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(consecutiveStitching(_:)), name: Notification.Name("consecutiveStitchingChanged"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(panoramicStitching(_:)), name: Notification.Name("panoramicStitchingChanged"), object: nil)
+        
+        
 
         let defaults = UserDefaults.standard
         var overlayOpacity: Float
@@ -68,6 +72,18 @@ class MainViewController: UIViewController, UINavigationControllerDelegate
     @objc func stitchingFailed(_ notification: Notification) {
         
     }
+    @objc func consecutiveStitching(_ notification: Notification) {
+        if let value = notification.userInfo?["consecutive"] as? Bool{
+            cameraHandler.changeStitchingMode(isConsecutive: value)
+        }
+    }
+    @objc func panoramicStitching(_ notification: Notification) {
+        if let value = notification.userInfo?["isPanoramic"] as? Bool{
+            cameraHandler.changeStitchingMode(isPanoramic: value)
+        }
+    }
+    
+    
        
     @objc func updateSensorsDuration(_ notification: Notification) {
         let defaults = UserDefaults.standard
@@ -90,10 +106,10 @@ class MainViewController: UIViewController, UINavigationControllerDelegate
         }
     }
     @IBAction func endPanoramaBtnTapped(_ sender: UIButton) {
-        print("")
         scanner.endPanorama()
         cameraHandler.endStitching()
         lastPhotoImageView.image = nil
+        overlayPhotoImageView.image = nil
     }
     @objc func imageTapped(tapGestureRecognizer: UITapGestureRecognizer)
     {

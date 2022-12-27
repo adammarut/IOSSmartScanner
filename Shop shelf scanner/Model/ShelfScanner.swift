@@ -224,13 +224,14 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
     var currentStitched: UIImage?
     private var photosArray: NSMutableArray = NSMutableArray()
     private var arrayOfPhotosArray: NSMutableArray = NSMutableArray()
-    var isPanoramic = false
+    var isPanoramic: Bool = false
     
     private var acc: AccelerometerHandler?
     let defaults = UserDefaults.standard
     var sensorsDuration: Double
     var frequency: Double
     var currentData: String?
+    var isConsecutive: Bool = false
     
     
     init(cameraType:AVCaptureDevice.DeviceType, cameraPreset:AVCaptureSession.Preset) {
@@ -253,11 +254,26 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
         if (defaults.object(forKey: "isPanoramic") != nil){
             self.isPanoramic = defaults.bool(forKey: "isPanoramic")
         }
+        if (defaults.object(forKey: "isConsecutive") != nil){
+            self.isConsecutive = defaults.bool(forKey: "isConsecutive")
+        }
         
         self.acc = AccelerometerHandler(updateInterval: 1.0/Double(frequency), duration: self.sensorsDuration )
 
     }
     
+    func changeStitchingMode(isConsecutive: Bool)
+    {
+        self.isConsecutive = isConsecutive
+        print("Is consecutive: \(self.isConsecutive)")
+
+    }
+    
+    func changeStitchingMode(isPanoramic: Bool)
+    {
+        self.isPanoramic = isPanoramic
+        print("Is panoramic: \(self.isPanoramic)")
+    }
     func checkCameraPermissions(){
         switch AVCaptureDevice.authorizationStatus(for: .video){
         case .notDetermined:
@@ -320,6 +336,7 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
         }
         self.photosArray.removeAllObjects()
         self.newPhoto = nil
+        self.currentStitched = nil
     }
     
     func beginSession(){
@@ -370,21 +387,52 @@ class CameraHandler: NSObject, UIImagePickerControllerDelegate,  AVCapturePhotoC
             let croppedPhoto = OpenCVWrapper.cropFor(matchingPreview: photo, imageViewIsOnTheLeft)
             return croppedPhoto
             }
-        
         return nil
     }
     
     func tryStitching()
     {
-        let newImage = OpenCVWrapper.stitchPhotos(self.photosArray as! [Any], panoramicWarp: self.isPanoramic)
-        if newImage != nil{
-            let croppedNewImage = OpenCVWrapper.cropStitchedPhoto(newImage)
-            let newImageStitched:[String:UIImage] = ["stitched": croppedNewImage]
-            self.currentStitched = croppedNewImage
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "stichedImage"), object: nil, userInfo: newImageStitched)
+        if(self.isConsecutive){
+            if(currentStitched==nil){
+                currentStitched = self.photosArray[self.photosArray.count-1] as! UIImage
+                let newImageStitched:[String:UIImage] = ["stitched": currentStitched!]
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "stichedImage"), object: nil, userInfo: newImageStitched)
+            }
+            else{
+                let newImage = OpenCVWrapper.stitchPhotos(currentStitched!,
+                                                          photo2: self.photosArray[self.photosArray.count-1] as! UIImage,
+                                                          panoramicWarp: self.isPanoramic)
+                if newImage != nil{
+                    let croppedNewImage = OpenCVWrapper.cropStitchedPhoto(newImage)
+                    let newImageStitched:[String:UIImage] = ["stitched": croppedNewImage]
+                    self.currentStitched = croppedNewImage
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "stichedImage"), object: nil, userInfo: newImageStitched)
+                }
+                else{
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "stichingFailed"), object: nil, userInfo: nil)
+                }
+            }
+            
         }
         else{
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "stichingFailed"), object: nil, userInfo: nil)
+            if(currentStitched==nil){
+                currentStitched = self.photosArray[self.photosArray.count-1] as! UIImage
+                let newImageStitched:[String:UIImage] = ["stitched": currentStitched!]
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "stichedImage"), object: nil, userInfo: newImageStitched)
+            }
+            else{
+                
+                let newImage = OpenCVWrapper.stitchPhotos(self.photosArray as! [Any], panoramicWarp: self.isPanoramic)
+                if newImage != nil{
+                    let croppedNewImage = OpenCVWrapper.cropStitchedPhoto(newImage)
+                    let newImageStitched:[String:UIImage] = ["stitched": croppedNewImage]
+                    self.currentStitched = croppedNewImage
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "stichedImage"), object: nil, userInfo: newImageStitched)
+                }
+                else{
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "stichingFailed"), object: nil, userInfo: nil)
+                }
+            }
         }
     }
     

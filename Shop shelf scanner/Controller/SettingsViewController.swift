@@ -69,7 +69,16 @@ class SettingsViewController: UIViewController {
         let defaults = UserDefaults.standard
 
         defaults.set(sender.isOn, forKey: "isPanoramic")
+        let panoDict:[String:Bool] = ["isPanoramic": Bool(sender.isOn)]
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "panoramicStitchingChanged"), object: nil, userInfo: panoDict)
 
+    }
+    @IBAction func consecutiveStitchingChanged(_ sender: UISwitch) {
+        let defaults = UserDefaults.standard
+
+        defaults.set(sender.isOn, forKey: "isConsecutive")
+        let consDict:[String:Bool] = ["consecutive": Bool(sender.isOn)]
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "consecutiveStitchingChanged"), object: nil, userInfo: consDict)
     }
     @IBAction func overlayOpacityChanged(_ sender: UISlider) {
         delegate?.opacityChanged(opacity:Double(sender.value))

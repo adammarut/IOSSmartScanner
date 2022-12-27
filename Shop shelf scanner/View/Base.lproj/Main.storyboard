@@ -357,7 +357,7 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="ehF-B3-PDW">
                                         <rect key="frame" x="0.0" y="639" width="370" height="31"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Show ultrawide preview" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gEE-Bu-sDZ">
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Consecutive stitching" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gEE-Bu-sDZ">
                                                 <rect key="frame" x="0.0" y="0.0" width="321" height="20.333333333333332"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <nil key="textColor"/>
@@ -365,6 +365,9 @@
                                             </label>
                                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8PQ-jk-rkT">
                                                 <rect key="frame" x="321" y="0.0" width="51" height="31"/>
+                                                <connections>
+                                                    <action selector="consecutiveStitchingChanged:" destination="1Qo-aL-JUg" eventType="valueChanged" id="8R9-hL-dCm"/>
+                                                </connections>
                                             </switch>
                                         </subviews>
                                     </stackView>
